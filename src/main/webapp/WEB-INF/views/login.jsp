@@ -8,7 +8,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Đăng nhập | PolySneaker</title>
+    <title>Login </title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
@@ -47,13 +47,14 @@
 
         /* ===== Header ===== */
         .lg-head { background: #fff; border-bottom: 1px solid #F5EEE4; }
-        .lg-head-inner { display: flex; align-items: center; justify-content: space-between; height: 60px; }
+        .lg-head-inner { display: flex; align-items: center; justify-content: space-between; height: 84px; }
         .lg-brand { display: flex; align-items: center; gap: 12px; }
-        .logo { display: flex; align-items: center; gap: 8px; }
-        .logo-mark { width: 30px; height: 30px; border-radius: 9px; background: var(--orange); display: flex; align-items: center; justify-content: center; }
-        .logo-name { font-weight: 800; font-size: 13px; letter-spacing: .5px; color: var(--brown); }
-        .logo-name b { color: var(--orange); font-weight: 800; }
-        .brand-text { font-weight: 800; font-size: 15px; color: var(--head); }
+        .logo { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+        .logo-mark { height: 64px; min-width: 64px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .logo-mark img { height: 100%; width: auto; max-width: 240px; object-fit: contain; border-radius: 10px; }
+        .logo-fallback { display: none; }
+        .logo-mark.no-img { width: 64px; background: var(--orange); border-radius: 16px; }
+        .logo-mark.no-img .logo-fallback { display: block; width: 32px; height: 32px; }
         .lg-links { display: flex; align-items: center; gap: 18px; font-size: 12.5px; font-weight: 700; color: var(--brown); }
         .lg-links a, .lg-links span { display: inline-flex; align-items: center; gap: 7px; }
         .lg-links a:hover { color: var(--orange); }
@@ -139,10 +140,15 @@
         .social a { height: 42px; border-radius: 12px; background: #FFF6E6; border: 1px solid #F8E3BC; display: flex; align-items: center; justify-content: center; gap: 9px; font-size: 12.5px; font-weight: 700; color: var(--brown); transition: background .15s; }
         .social a:hover { background: #FFEDCC; }
 
-        .lg-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 24px; font-size: 12px; color: #9B7A58; }
-        .lg-foot b { color: var(--head); font-weight: 800; }
-        .lg-foot .reg:hover b { color: var(--orange); }
-        .gift { display: inline-block; margin-left: 6px; padding: 3px 9px; border-radius: 999px; background: #FFE9A8; color: #8A4B08; font-size: 10.5px; font-weight: 800; }
+        /* --- Nút đăng ký tài khoản --- */
+        .reg-wrap { margin-top: 22px; text-align: center; }
+        .reg-text { display: block; font-size: 12px; color: #9B7A58; margin-bottom: 10px; }
+        .btn-register { width: 100%; height: 50px; border-radius: 14px; border: 1.5px solid var(--orange); background: #fff; color: var(--head); font-family: inherit; font-weight: 800; font-size: 14px; letter-spacing: .3px; display: flex; align-items: center; justify-content: center; gap: 9px; cursor: pointer; transition: background .15s, transform .15s, box-shadow .15s; }
+        .btn-register svg { color: var(--orange); }
+        .btn-register:hover { background: #FFF6E6; transform: translateY(-1px); box-shadow: 0 10px 22px rgba(247, 148, 29, .16); }
+        .gift { display: inline-block; padding: 3px 9px; border-radius: 999px; background: #FFE9A8; color: #8A4B08; font-size: 10.5px; font-weight: 800; letter-spacing: .2px; }
+
+        .lg-foot { display: flex; align-items: center; justify-content: center; margin-top: 20px; }
         .ssl { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; background: #F6F1E8; color: #8E7C66; font-size: 9.5px; font-weight: 800; letter-spacing: .5px; text-transform: uppercase; }
 
         /* ===== Footer ===== */
@@ -161,6 +167,7 @@
         @media (max-width: 520px) {
             .lg-links .hotline { display: none; }
             .lg-links .sep { display: none; }
+            .logo-mark img { max-width: 150px; }
             .lg-title { font-size: 28px; }
             .lg-bottom-inner { height: auto; padding: 14px 0; flex-direction: column; align-items: flex-start; gap: 8px; }
         }
@@ -171,16 +178,14 @@
 <!-- ===== Header ===== -->
 <header class="lg-head">
     <div class="container lg-head-inner">
-        <div class="lg-brand">
-            <a class="logo" href="${ctx}/">
-                <span class="logo-mark">
-                    <svg viewBox="0 0 24 24" fill="#fff" width="18" height="18"><path d="M2 16.5c0-1 .6-1.8 1.5-2.1l4.2-1.4 2.3-3.2c.3-.4.9-.5 1.3-.2l1.6 1.2c.6.5 1.4.8 2.2.9l3.4.5c1.6.2 2.8 1.6 2.8 3.2V17c0 .6-.4 1-1 1H3c-.6 0-1-.4-1-1v-.5z"/></svg>
-                </span>
-                <span class="logo-name">POLY<b>SNEAKER</b></span>
-            </a>
-            <span class="brand-text">PolySneaker</span>
-        </div>
-
+       <div class="lg-brand">
+    <a class="logo" href="${ctx}/">
+        <span class="logo-mark">
+            <img src="/static/assets/images/logo_poly_store.png" alt="PolySneaker" onerror="this.parentNode.classList.add('no-img'); this.remove();">
+            <svg class="logo-fallback" viewBox="0 0 24 24" fill="#fff" width="24" height="24"><path d="M2 16.5c0-1 .6-1.8 1.5-2.1l4.2-1.4 2.3-3.2c.3-.4.9-.5 1.3-.2l1.6 1.2c.6.5 1.4.8 2.2.9l3.4.5c1.6.2 2.8 1.6 2.8 3.2V17c0 .6-.4 1-1 1H3c-.6 0-1-.4-1-1v-.5z"/></svg>
+        </span>
+    </a>
+</div>
         <div class="lg-links">
             <a href="${ctx}/">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
@@ -202,14 +207,12 @@
         <!-- Bên trái: hình + slogan -->
         <aside class="lg-left">
             <div class="lg-left-top">
-                <span class="vip-pill">Hội viên thượng hạng</span>
-                <span class="brand-tiny">POLYSNEAKER</span>
+                <span class="brand-tiny">#PolySneaker</span>
             </div>
-
             <div class="lg-visual">
                 <div class="lg-photo">
                     <svg class="ph" viewBox="0 0 24 24"><path fill="currentColor" d="M2 16.5c0-1 .6-1.8 1.5-2.1l4.2-1.4 2.3-3.2c.3-.4.9-.5 1.3-.2l1.6 1.2c.6.5 1.4.8 2.2.9l3.4.5c1.6.2 2.8 1.6 2.8 3.2V17c0 .6-.4 1-1 1H3c-.6 0-1-.4-1-1v-.5z"/></svg>
-                    <img src="/static/assets/images/model_sneaker_login_images.jpg" alt="PolySneaker" onerror="this.style.display='none'">
+                    <img src="/static/assets/images/hinh-dong-chu-welcome-dep_075934502.gif" alt="PolySneaker" onerror="this.style.display='none'">
                 </div>
                 <span class="lg-auth-tag">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="8 12 11 15 16 9"/></svg>
@@ -288,8 +291,17 @@
                 </a>
             </div>
 
+            <!-- Nút đăng ký tài khoản -->
+            <div class="reg-wrap">
+                <span class="reg-text">Chưa có tài khoản PolySneaker?</span>
+                <a href="${ctx}/register" class="btn-register">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+                    Đăng Ký Tài Khoản
+                    <span class="gift">+200K</span>
+                </a>
+            </div>
+
             <div class="lg-foot">
-                <a href="#" class="reg">Chưa có tài khoản? <b>Đăng ký ngay</b><span class="gift">+200K</span></a>
                 <span class="ssl">
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                     Mã hóa 256-bit SSL
@@ -320,10 +332,6 @@
             pw.type = pw.type === 'password' ? 'text' : 'password';
         });
     })();
-
-    // Tạm chặn submit vì chưa có xử lý đăng nhập phía server.
-    // Khi làm xong @PostMapping("/login") thì xóa đoạn này.
-    document.getElementById('loginForm').addEventListener('submit', function (e) { e.preventDefault(); });
 </script>
 
 </body>

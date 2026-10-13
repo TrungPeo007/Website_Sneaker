@@ -1,13 +1,14 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<%@ taglib uri="jakarta.tags.functions" prefix="fn" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Trang chủ | PolySneaker</title>
+    <title>HomePage</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
@@ -46,38 +47,46 @@
         .container { max-width: 1240px; margin: 0 auto; padding: 0 24px; }
 
         /* ===== Thanh quảng cáo ===== */
-        .announce-bar { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 9px 16px; background: #FFF6DC; border-bottom: 1px solid #F6E8C0; text-align: center; }
+        .announce-bar { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 10px 16px; background: #FFF6DC; border-bottom: 1px solid #F6E8C0; text-align: center; }
         .announce-dot { width: 8px; height: 8px; border-radius: 50%; background: #F9A825; flex-shrink: 0; }
-        .announce-text { font-size: 13px; font-weight: 600; color: #A8620F; letter-spacing: .2px; }
+        .announce-text { font-size: 14px; font-weight: 600; color: #A8620F; letter-spacing: .2px; }
 
         /* ===== Header ===== */
         .site-header { background: #fff; border-bottom: 1px solid #F5EEE4; position: sticky; top: 0; z-index: 20; }
-        .header-inner { display: flex; align-items: center; gap: 22px; height: 76px; }
+        .header-inner { display: flex; align-items: center; gap: 26px; height: 108px; }
 
         .logo { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-        .logo-mark { width: 42px; height: 42px; border-radius: 12px; background: var(--orange); display: flex; align-items: center; justify-content: center; }
+        .logo-mark { height: 92px; min-width: 92px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .logo-mark img { height: 100%; width: auto; max-width: 240px; object-fit: contain; border-radius: 10px; }
+        .logo-fallback { display: none; }
+        .logo-mark.no-img { width: 92px; background: var(--orange); border-radius: 16px; }
+        .logo-mark.no-img .logo-fallback { display: block; width: 44px; height: 44px; }
         .logo-text { display: flex; flex-direction: column; line-height: 1.1; }
         .logo-name { font-weight: 800; font-size: 17px; letter-spacing: .6px; color: var(--brown); }
         .logo-name b { color: var(--orange); font-weight: 800; }
         .logo-sub { font-size: 8.5px; letter-spacing: 1.8px; color: var(--muted); font-weight: 600; margin-top: 3px; }
 
         .nav { display: flex; align-items: center; gap: 4px; }
-        .nav a { display: flex; align-items: center; gap: 6px; padding: 9px 16px; border-radius: 999px; font-weight: 600; font-size: 14px; letter-spacing: .2px; color: var(--brown); transition: background .15s, color .15s; }
+        .nav a { display: flex; align-items: center; gap: 7px; padding: 12px 19px; border-radius: 999px; font-weight: 600; font-size: 16px; letter-spacing: .2px; color: var(--brown); transition: background .15s, color .15s; }
+        .nav a svg { width: 19px; height: 19px; }
         .nav a:hover { background: var(--cream); color: var(--orange); }
         .nav a.active { background: var(--cream); color: var(--orange); }
-        .nav .chev { opacity: .6; }
+        .nav .chev { width: 16px; height: 16px; opacity: .6; }
 
-        .header-search { flex: 1; min-width: 200px; max-width: 320px; display: flex; align-items: center; gap: 8px; margin-left: auto; padding: 0 16px; height: 42px; border-radius: 999px; background: var(--cream); border: 1.5px solid var(--cream-border); color: var(--orange); }
-        .header-search input { flex: 1; border: none; outline: none; background: transparent; font-family: inherit; font-size: 13px; font-weight: 400; color: var(--text); }
+        .header-search { flex: 1; min-width: 220px; max-width: 360px; display: flex; align-items: center; gap: 10px; margin-left: auto; padding: 0 20px; height: 52px; border-radius: 999px; background: var(--cream); border: 1.5px solid var(--cream-border); color: var(--orange); }
+        .header-search svg { width: 20px; height: 20px; flex-shrink: 0; }
+        .header-search input { flex: 1; min-width: 0; border: none; outline: none; background: transparent; font-family: inherit; font-size: 14.5px; font-weight: 400; color: var(--text); }
         .header-search input::placeholder { color: #BFA784; font-weight: 400; }
 
-        .header-actions { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
-        .icon-btn { position: relative; width: 42px; height: 42px; border-radius: 12px; border: 1.5px solid var(--cream-border); background: #fff; color: var(--orange); display: flex; align-items: center; justify-content: center; transition: background .15s; }
+        .header-actions { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+        .icon-btn { position: relative; width: 52px; height: 52px; border-radius: 15px; border: 1.5px solid var(--cream-border); background: #fff; color: var(--orange); display: flex; align-items: center; justify-content: center; transition: background .15s; }
+        .icon-btn svg { width: 23px; height: 23px; }
         .icon-btn:hover { background: var(--cream); }
-        .badge { position: absolute; top: -7px; right: -7px; min-width: 19px; height: 19px; padding: 0 5px; border-radius: 999px; background: var(--orange); color: #fff; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; }
-        .account-btn { display: flex; align-items: center; gap: 9px; padding: 5px 16px 5px 5px; border-radius: 999px; background: var(--cream); border: 1.5px solid var(--cream-border); font-weight: 600; font-size: 13.5px; letter-spacing: .2px; color: var(--brown); }
+        .badge { position: absolute; top: -8px; right: -8px; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px; background: var(--orange); color: #fff; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; }
+        .account-btn { display: flex; align-items: center; gap: 11px; padding: 6px 22px 6px 6px; border-radius: 999px; background: var(--cream); border: 1.5px solid var(--cream-border); font-weight: 600; font-size: 15px; letter-spacing: .2px; color: var(--brown); }
         .account-btn:hover { background: #FFEDCC; }
-        .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--orange); display: flex; align-items: center; justify-content: center; }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--orange); display: flex; align-items: center; justify-content: center; }
+        .avatar svg { width: 21px; height: 21px; }
 
         /* ===== Dùng chung cho các section ===== */
         main.container { padding-bottom: 72px; }
@@ -178,6 +187,7 @@
         .old { font-size: 11.5px; color: #B7894F; text-decoration: line-through; margin-top: 2px; }
         .cart-btn { width: 40px; height: 40px; border: none; border-radius: 13px; background: #FFEFC2; color: var(--amber); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background .15s; }
         .cart-btn:hover { background: #FFE19A; }
+        .p-empty { grid-column: 1 / -1; text-align: center; padding: 40px 16px; color: var(--muted); font-size: 14px; }
 
         /* ===== 3. LookBook ===== */
         .lb-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
@@ -247,7 +257,10 @@
         .site-footer { background: #FFF9E6; border-top: 1px solid #F6E8C0; padding: 44px 0 0; }
         .ft-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1.1fr; gap: 40px; }
         .ft-logo { display: inline-flex; align-items: center; gap: 8px; }
-        .ft-logo-mark { width: 34px; height: 34px; border-radius: 9px; background: var(--orange); display: flex; align-items: center; justify-content: center; }
+        .ft-logo-mark { width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .ft-logo-mark img { width: 100%; height: 100%; object-fit: contain; border-radius: 9px; }
+        .ft-logo-mark.no-img { background: var(--orange); border-radius: 9px; }
+        .ft-logo-mark.no-img .logo-fallback { display: block; }
         .ft-logo-name { font-weight: 800; font-size: 15px; letter-spacing: .5px; color: var(--brown); line-height: 1; }
         .ft-logo-name b { color: var(--orange); font-weight: 800; }
         .ft-logo-sub { display: block; font-size: 6.5px; letter-spacing: 1.6px; color: var(--muted); font-weight: 600; margin-top: 3px; }
@@ -272,9 +285,13 @@
         .ft-bottom nav a:hover { color: var(--orange); }
 
         /* ===== Responsive ===== */
+        @media (max-width: 1250px) {
+            .header-inner { gap: 18px; }
+            .nav a { padding: 11px 13px; font-size: 15px; }
+            .header-search { min-width: 150px; max-width: 240px; }
+        }
         @media (max-width: 1100px) {
-            .header-search { max-width: 220px; min-width: 150px; }
-            .nav a { padding: 9px 11px; }
+            .nav a { padding: 11px 11px; font-size: 14.5px; }
             .hero-card { padding: 34px 30px; gap: 28px; }
             .hero-title { font-size: 40px; }
             .p-grid { grid-template-columns: repeat(2, 1fr); }
@@ -283,6 +300,10 @@
             .ft-grid { grid-template-columns: 1fr 1fr; }
         }
         @media (max-width: 900px) {
+            .header-inner { height: 84px; }
+            .logo-mark { height: 64px; min-width: 64px; }
+            .logo-mark.no-img { width: 64px; }
+            .logo-mark.no-img .logo-fallback { width: 32px; height: 32px; }
             .nav, .header-search { display: none; }
             .header-actions { margin-left: auto; }
             .hero-card { grid-template-columns: 1fr; }
@@ -294,7 +315,8 @@
         }
         @media (max-width: 600px) {
             .announce-text { font-size: 12px; }
-            .account-btn { font-size: 0; gap: 0; padding: 5px; }
+            .logo-mark img { max-width: 150px; }
+            .account-btn { font-size: 0; gap: 0; padding: 6px; }
             .hero-title { font-size: 32px; }
             .hero-stats { gap: 22px; }
             .p-grid { grid-template-columns: 1fr; }
@@ -321,7 +343,7 @@
 <!-- ===== Thanh quảng cáo ===== -->
 <div class="announce-bar">
     <span class="announce-dot"></span>
-    <span class="announce-text">Chào đón Bộ Sưu Tập Mùa Thu 2025: Miễn phí gói quà phong cách Châu Á &amp; giao nhanh tận nơi</span>
+    <span class="announce-text">Chào đón Bộ Sưu Tập Đỉnh Nhất Châu Á 2026 : Miễn phí gói quà phong cách Châu Á &amp; giao nhanh tận nơi</span>
 </div>
 
 <!-- ===== Header ===== -->
@@ -331,11 +353,8 @@
         <!-- Logo -->
         <a class="logo" href="${ctx}/">
             <span class="logo-mark">
-                <svg viewBox="0 0 24 24" fill="#fff" width="24" height="24"><path d="M2 16.5c0-1 .6-1.8 1.5-2.1l4.2-1.4 2.3-3.2c.3-.4.9-.5 1.3-.2l1.6 1.2c.6.5 1.4.8 2.2.9l3.4.5c1.6.2 2.8 1.6 2.8 3.2V17c0 .6-.4 1-1 1H3c-.6 0-1-.4-1-1v-.5z"/></svg>
-            </span>
-            <span class="logo-text">
-                <span class="logo-name">POLY<b>SNEAKER</b></span>
-                <span class="logo-sub">PREMIUM SNEAKER STORE</span>
+                <img src="/static/assets/images/logo_poly_store.png" alt="PolySneaker" onerror="this.parentNode.classList.add('no-img'); this.remove();">
+                <svg class="logo-fallback" viewBox="0 0 24 24" fill="#fff" width="24" height="24"><path d="M2 16.5c0-1 .6-1.8 1.5-2.1l4.2-1.4 2.3-3.2c.3-.4.9-.5 1.3-.2l1.6 1.2c.6.5 1.4.8 2.2.9l3.4.5c1.6.2 2.8 1.6 2.8 3.2V17c0 .6-.4 1-1 1H3c-.6 0-1-.4-1-1v-.5z"/></svg>
             </span>
         </a>
 
@@ -364,14 +383,11 @@
 
         <!-- Yêu thích / Giỏ hàng / Tài khoản -->
         <div class="header-actions">
-            <a href="#" class="icon-btn" title="Yêu thích">
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg>
-            </a>
             <a href="#" class="icon-btn" title="Giỏ hàng">
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
                 <span class="badge">3</span>
             </a>
-          <a href="${ctx}/login" class="account-btn">
+            <a href="${ctx}/login" class="account-btn">
                 <span class="avatar">
                     <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                 </span>
@@ -445,7 +461,7 @@
         </div>
     </section>
 
-    <!-- ===== 2. FLASH DROP ===== -->
+    <!-- ===== 2. FLASH DROP (sản phẩm lấy từ database) ===== -->
     <section class="sec" id="flash">
         <div class="flash-bar">
             <div class="flash-left">
@@ -470,95 +486,58 @@
         </div>
 
         <div class="p-grid">
+            <c:forEach var="p" items="${products}">
+                <article class="p-card">
+                    <div class="p-media">
+                        <svg class="ph"><use href="#ic-shoe"/></svg>
 
-            <!-- Sản phẩm 1 -->
-            <article class="p-card">
-                <div class="p-media">
-                    <svg class="ph"><use href="#ic-shoe"/></svg>
-                    <img src="/static/assets/images/air_jordan_gold.jpg" alt="Air Jordan 1 High OG" onerror="this.style.display='none'">
-                    <span class="p-tag hot">Yêu thích</span>
-                    <button class="heart" type="button" aria-label="Yêu thích"><svg width="18" height="18"><use href="#ic-heart"/></svg></button>
-                </div>
-                <div class="p-body">
-                    <div class="p-brand">Nike Jordan</div>
-                    <div class="p-name">Air Jordan 1 High OG "Amber Gold"</div>
-                    <div class="rate"><span class="stars" style="--rate:96%">★★★★★</span> 4.8 (128)</div>
-                    <div class="p-foot">
-                        <div>
-                            <div class="price">3.890.000₫</div>
-                            <div class="old">4.990.000₫</div>
-                        </div>
-                        <button class="cart-btn" type="button" aria-label="Thêm vào giỏ"><svg width="19" height="19"><use href="#ic-cart"/></svg></button>
+                        <c:if test="${not empty p.mainImageUrl}">
+                            <%-- Nếu DB lưu sẵn đường dẫn (http... hoặc /...) thì dùng nguyên, còn lại coi là tên file --%>
+                            <c:choose>
+                                <c:when test="${fn:startsWith(p.mainImageUrl, 'http') or fn:startsWith(p.mainImageUrl, '/')}">
+                                    <c:set var="img" value="${p.mainImageUrl}"/>
+                                </c:when>
+                                <c:otherwise>
+                                    <c:set var="img" value="/static/assets/images/${p.mainImageUrl}"/>
+                                </c:otherwise>
+                            </c:choose>
+                            <img src="<c:out value='${img}'/>" alt="<c:out value='${p.name}'/>" onerror="this.style.display='none'">
+                        </c:if>
+
+                        <c:choose>
+                            <c:when test="${not empty p.badge}">
+                                <span class="p-tag hot"><c:out value="${p.badge}"/></span>
+                            </c:when>
+                            <c:when test="${not empty p.discountPercent and p.discountPercent gt 0}">
+                                <span class="p-tag sale">-${p.discountPercent}%</span>
+                            </c:when>
+                        </c:choose>
+
+                        <button class="heart" type="button" aria-label="Yêu thích"><svg width="18" height="18"><use href="#ic-heart"/></svg></button>
                     </div>
-                </div>
-            </article>
-
-            <!-- Sản phẩm 2 -->
-            <article class="p-card">
-                <div class="p-media">
-                    <svg class="ph"><use href="#ic-shoe"/></svg>
-                    <img src="/static/assets/images/giay_sneaker_white.jpg" alt="Ultraboost Light Primeknit Beige" onerror="this.style.display='none'">
-                    <span class="p-tag sale">-30% giảm</span>
-                    <button class="heart" type="button" aria-label="Yêu thích"><svg width="18" height="18"><use href="#ic-heart"/></svg></button>
-                </div>
-                <div class="p-body">
-                    <div class="p-brand">Adidas Running</div>
-                    <div class="p-name">Ultraboost Light Primeknit Beige</div>
-                    <div class="rate"><span class="stars" style="--rate:100%">★★★★★</span> 5.0 (94)</div>
-                    <div class="p-foot">
-                        <div>
-                            <div class="price">2.950.000₫</div>
-                            <div class="old">4.200.000₫</div>
+                    <div class="p-body">
+                        <div class="p-brand"><c:out value="${p.category.name}"/></div>
+                        <div class="p-name"><c:out value="${p.name}"/></div>
+                        <div class="rate">
+                            <span class="stars" style="--rate:${p.avgRating * 20}%">★★★★★</span>
+                            <fmt:formatNumber value="${p.avgRating}" minFractionDigits="1" maxFractionDigits="1"/> (${p.reviewCount})
                         </div>
-                        <button class="cart-btn" type="button" aria-label="Thêm vào giỏ"><svg width="19" height="19"><use href="#ic-cart"/></svg></button>
-                    </div>
-                </div>
-            </article>
-
-            <!-- Sản phẩm 3 -->
-            <article class="p-card">
-                <div class="p-media">
-                    <svg class="ph"><use href="#ic-shoe"/></svg>
-                    <img src="/static/assets/images/new_balance.jpg" alt="New Balance 1906R Soft Vanilla" onerror="this.style.display='none'">
-                    <span class="p-tag hot">Bán chạy</span>
-                    <button class="heart" type="button" aria-label="Yêu thích"><svg width="18" height="18"><use href="#ic-heart"/></svg></button>
-                </div>
-                <div class="p-body">
-                    <div class="p-brand">New Balance</div>
-                    <div class="p-name">New Balance 1906R Soft Vanilla</div>
-                    <div class="rate"><span class="stars" style="--rate:80%">★★★★★</span> 4.7 (76)</div>
-                    <div class="p-foot">
-                        <div>
-                            <div class="price">3.450.000₫</div>
-                            <div class="old">4.100.000₫</div>
+                        <div class="p-foot">
+                            <div>
+                                <div class="price"><fmt:formatNumber value="${p.salePrice}" type="number" groupingUsed="true"/>₫</div>
+                                <c:if test="${p.originalPrice gt p.salePrice}">
+                                    <div class="old"><fmt:formatNumber value="${p.originalPrice}" type="number" groupingUsed="true"/>₫</div>
+                                </c:if>
+                            </div>
+                            <button class="cart-btn" type="button" aria-label="Thêm vào giỏ"><svg width="19" height="19"><use href="#ic-cart"/></svg></button>
                         </div>
-                        <button class="cart-btn" type="button" aria-label="Thêm vào giỏ"><svg width="19" height="19"><use href="#ic-cart"/></svg></button>
                     </div>
-                </div>
-            </article>
+                </article>
+            </c:forEach>
 
-            <!-- Sản phẩm 4 -->
-            <article class="p-card">
-                <div class="p-media">
-                    <svg class="ph"><use href="#ic-shoe"/></svg>
-                    <img src="/static/assets/images/dunk_low_sneaker.jpg" alt="Nike Dunk Low Sunburst Amber" onerror="this.style.display='none'">
-                    <span class="p-tag sale">-25%</span>
-                    <button class="heart" type="button" aria-label="Yêu thích"><svg width="18" height="18"><use href="#ic-heart"/></svg></button>
-                </div>
-                <div class="p-body">
-                    <div class="p-brand">Nike Sportswear</div>
-                    <div class="p-name">Nike Dunk Low "Sunburst Amber"</div>
-                    <div class="rate"><span class="stars" style="--rate:98%">★★★★★</span> 4.9 (210)</div>
-                    <div class="p-foot">
-                        <div>
-                            <div class="price">2.650.000₫</div>
-                            <div class="old">3.500.000₫</div>
-                        </div>
-                        <button class="cart-btn" type="button" aria-label="Thêm vào giỏ"><svg width="19" height="19"><use href="#ic-cart"/></svg></button>
-                    </div>
-                </div>
-            </article>
-
+            <c:if test="${empty products}">
+                <div class="p-empty">Chưa có sản phẩm nào để hiển thị.</div>
+            </c:if>
         </div>
     </section>
 
@@ -617,7 +596,7 @@
             <a href="#" class="b-card">
                 <div class="b-img media">
                     <svg class="ph"><use href="#ic-shoe"/></svg>
-                <img src="/static/assets/images/white_sneaker.jpg" alt="Chăm sóc giày trắng" onerror="this.style.display='none'" style="width:100%;height:100%;object-fit:cover">
+                    <img src="/static/assets/images/white_sneaker.jpg" alt="Chăm sóc giày trắng" onerror="this.style.display='none'" style="width:100%;height:100%;object-fit:cover">
                     <span class="b-tag">Mẹo hay</span>
                 </div>
                 <div class="b-body">
@@ -740,7 +719,8 @@
             <div class="ft-brand">
                 <a class="ft-logo" href="${ctx}/">
                     <span class="ft-logo-mark">
-                        <svg viewBox="0 0 24 24" fill="#fff" width="20" height="20"><path d="M2 16.5c0-1 .6-1.8 1.5-2.1l4.2-1.4 2.3-3.2c.3-.4.9-.5 1.3-.2l1.6 1.2c.6.5 1.4.8 2.2.9l3.4.5c1.6.2 2.8 1.6 2.8 3.2V17c0 .6-.4 1-1 1H3c-.6 0-1-.4-1-1v-.5z"/></svg>
+                        <img src="/static/assets/images/logo.png" alt="PolySneaker" onerror="this.parentNode.classList.add('no-img'); this.remove();">
+                        <svg class="logo-fallback" viewBox="0 0 24 24" fill="#fff" width="20" height="20"><path d="M2 16.5c0-1 .6-1.8 1.5-2.1l4.2-1.4 2.3-3.2c.3-.4.9-.5 1.3-.2l1.6 1.2c.6.5 1.4.8 2.2.9l3.4.5c1.6.2 2.8 1.6 2.8 3.2V17c0 .6-.4 1-1 1H3c-.6 0-1-.4-1-1v-.5z"/></svg>
                     </span>
                     <span>
                         <span class="ft-logo-name">POLY<b>SNEAKER</b></span>

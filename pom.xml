@@ -23,6 +23,23 @@
 			<artifactId>spring-boot-starter-webmvc</artifactId>
 		</dependency>
 
+		<!-- Database: JPA + SQL Server -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.microsoft.sqlserver</groupId>
+			<artifactId>mssql-jdbc</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
+		<!-- Mã hóa mật khẩu BCrypt (không kéo theo Spring Security đầy đủ) -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-crypto</artifactId>
+		</dependency>
+
 		<!-- Chạy được JSP -->
 		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
@@ -109,5 +126,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
 </project>
