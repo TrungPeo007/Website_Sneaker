@@ -4,7 +4,6 @@ import com.polysneaker.polysneaker.dto.LoginUser;
 import com.polysneaker.polysneaker.dto.ProductForm;
 import com.polysneaker.polysneaker.service.ProductService;
 import jakarta.servlet.http.HttpSession;
-import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,7 +13,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.Map;
 
 @Controller
-@RequiredArgsConstructor
 public class AdminController {
 
     // Đổi 2 dòng này cho khớp vị trí file JSP của anh
@@ -23,7 +21,9 @@ public class AdminController {
 
     private final ProductService productService;
 
-    /** Chưa đăng nhập -> /login ; không phải ADMIN -> trang chủ ; hợp lệ -> null */
+    public AdminController(ProductService productService) {
+        this.productService = productService;
+    }
     private String guard(HttpSession session) {
         Object o = session.getAttribute(LoginUser.SESSION_KEY);
         if (!(o instanceof LoginUser user)) return "redirect:/login";

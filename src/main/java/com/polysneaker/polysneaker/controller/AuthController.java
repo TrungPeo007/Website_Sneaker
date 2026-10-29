@@ -6,7 +6,6 @@ import com.polysneaker.polysneaker.entity.Account;
 import com.polysneaker.polysneaker.service.AccountService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,10 +18,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.Map;
 
 @Controller
-@RequiredArgsConstructor
 public class AuthController {
 
     private final AccountService accountService;
+
+    public AuthController(AccountService accountService) {
+        this.accountService = accountService;
+    }
 
     // ---------- LOGIN ----------
     @GetMapping("/login")
@@ -64,26 +66,26 @@ public class AuthController {
         return "register";
     }
 
-   @PostMapping("/register")
-public String register(@ModelAttribute("registerForm") RegisterForm form,
-                       Model model,
-                       RedirectAttributes redirectAttributes) {
-    Map<String, String> errors = accountService.validateRegister(form);
+    @PostMapping("/register")
+    public String register(@ModelAttribute("registerForm") RegisterForm form,
+                           Model model,
+                           RedirectAttributes redirectAttributes) {
+        Map<String, String> errors = accountService.validateRegister(form);
 
-    if (errors.isEmpty()) {
-        try {
-            accountService.register(form);
-            redirectAttributes.addFlashAttribute("success", "Đăng ký thành công! Hãy đăng nhập.");
-            return "redirect:/login";
-        } catch (DataIntegrityViolationException e) {
-            errors.put("general", "Tên đăng nhập hoặc email đã tồn tại");
+        if (errors.isEmpty()) {
+            try {
+                accountService.register(form);
+                redirectAttributes.addFlashAttribute("success", "Đăng ký thành công! Hãy đăng nhập.");
+                return "redirect:/login";
+            } catch (DataIntegrityViolationException e) {
+                errors.put("general", "Tên đăng nhập hoặc email đã tồn tại");
+            }
         }
+
+        model.addAttribute("errors", errors);
+        return "register";
     }
 
-    // lấy lỗi đầu tiên để hiện trong khung báo lỗi sẵn có của trang
-    model.addAttribute("error", errors.values().iterator().next());
-    return "register";
-}
     // ---------- LOGOUT ----------
     @GetMapping("/logout")
     public String logout(HttpSession session) {

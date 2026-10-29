@@ -6,7 +6,6 @@ import com.polysneaker.polysneaker.entity.Product;
 import com.polysneaker.polysneaker.entity.ProductDetail;
 import com.polysneaker.polysneaker.repository.CategoryRepository;
 import com.polysneaker.polysneaker.repository.ProductRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,11 +17,15 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-@RequiredArgsConstructor
 public class ProductService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+
+    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository) {
+        this.productRepository = productRepository;
+        this.categoryRepository = categoryRepository;
+    }
 
     // ---------- Đọc ----------
     @Transactional(readOnly = true)
@@ -51,7 +54,10 @@ public class ProductService {
         f.setCategoryId(p.getCategory().getId());
         f.setMainImageUrl(p.getMainImageUrl());
         f.setOriginalPrice(p.getOriginalPrice());
-        f.setSalePrice(p.getSalePrice());
+        // Giá bán bằng giá gốc nghĩa là không giảm giá -> để trống ô "Giá bán" khi sửa
+        boolean noDiscount = p.getSalePrice() == null
+                || p.getSalePrice().compareTo(p.getOriginalPrice()) == 0;
+        f.setSalePrice(noDiscount ? null : p.getSalePrice());
         f.setBadge(p.getBadge());
         f.setActive(p.isActive());
         for (ProductDetail d : p.getDetails()) {
@@ -77,13 +83,16 @@ public class ProductService {
             errors.put("categoryId", "Vui lòng chọn danh mục.");
         }
 
+        // Giá gốc bắt buộc
         if (f.getOriginalPrice() == null || f.getOriginalPrice().signum() < 0) {
             errors.put("originalPrice", "Giá gốc không hợp lệ.");
         }
-        if (f.getSalePrice() == null || f.getSalePrice().signum() < 0) {
+        // Giá bán không bắt buộc: để trống = không giảm giá. Nếu có nhập thì phải hợp lệ.
+        if (f.getSalePrice() != null && f.getSalePrice().signum() < 0) {
             errors.put("salePrice", "Giá bán không hợp lệ.");
         }
         if (!errors.containsKey("originalPrice") && !errors.containsKey("salePrice")
+                && f.getSalePrice() != null
                 && f.getSalePrice().compareTo(f.getOriginalPrice()) > 0) {
             errors.put("salePrice", "Giá bán không được lớn hơn giá gốc.");
         }
@@ -122,7 +131,8 @@ public class ProductService {
         p.setCategory(categoryRepository.getReferenceById(f.getCategoryId()));
         p.setMainImageUrl(blankToNull(f.getMainImageUrl()));
         p.setOriginalPrice(f.getOriginalPrice());
-        p.setSalePrice(f.getSalePrice());
+        // Không nhập giá bán -> sản phẩm không giảm giá -> giá bán = giá gốc
+        p.setSalePrice(f.getSalePrice() != null ? f.getSalePrice() : f.getOriginalPrice());
         p.setBadge(blankToNull(f.getBadge()));
         p.setActive(f.isActive());
 

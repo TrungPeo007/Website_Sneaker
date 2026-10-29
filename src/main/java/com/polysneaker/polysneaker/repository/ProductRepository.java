@@ -23,4 +23,11 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     // Form sửa: 1 sản phẩm kèm danh mục + size
     @Query("select p from Product p join fetch p.category left join fetch p.details where p.id = :id")
     Optional<Product> findDetailById(@Param("id") Integer id);
+    @Query("""
+       SELECT p FROM Product p
+       WHERE (:categoryId IS NULL OR p.category.id = :categoryId)
+         AND LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%'))
+       """)
+List<Product> search(@Param("categoryId") Integer categoryId,
+                     @Param("keyword") String keyword);
 }

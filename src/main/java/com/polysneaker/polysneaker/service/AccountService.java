@@ -3,17 +3,17 @@ package com.polysneaker.polysneaker.service;
 import com.polysneaker.polysneaker.dto.RegisterForm;
 import com.polysneaker.polysneaker.entity.Account;
 import com.polysneaker.polysneaker.repository.AccountRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
 @Service
-@RequiredArgsConstructor
 public class AccountService {
 
     private static final Pattern USERNAME = Pattern.compile("^[A-Za-z0-9_.]{3,50}$");
@@ -21,6 +21,11 @@ public class AccountService {
 
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
+
+    public AccountService(AccountRepository accountRepository, PasswordEncoder passwordEncoder) {
+        this.accountRepository = accountRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     /** Kiểm tra form đăng ký. Trả về map lỗi theo từng field (rỗng = hợp lệ). */
     public Map<String, String> validateRegister(RegisterForm form) {
@@ -66,7 +71,13 @@ public class AccountService {
         return accountRepository.save(account);
     }
 
-    /** Đăng nhập. Sai thông tin hoặc tài khoản bị khóa thì ném IllegalArgumentException kèm thông báo. */
+    /**
+     * Đăng nhập.
+     * - CUSTOMER: so sánh với hash BCrypt.
+     * - ADMIN: mật khẩu lưu chữ thường trong DB thì so sánh thẳng;
+     *          nếu DB vẫn đang là hash BCrypt ($2a$...) thì vẫn đăng nhập được bằng matches().
+     * Sai thông tin hoặc tài khoản bị khóa thì ném IllegalArgumentException kèm thông báo.
+     */
     @Transactional(readOnly = true)
     public Account login(String username, String rawPassword) {
         String invalid = "Sai tên đăng nhập hoặc mật khẩu";
@@ -74,13 +85,30 @@ public class AccountService {
         Account account = accountRepository.findByUsername(clean(username))
                 .orElseThrow(() -> new IllegalArgumentException(invalid));
 
-        if (rawPassword == null || !passwordEncoder.matches(rawPassword, account.getPassword())) {
+        if (rawPassword == null || !passwordMatches(account, rawPassword)) {
             throw new IllegalArgumentException(invalid);
         }
         if (!account.isActive()) {
             throw new IllegalArgumentException("Tài khoản đã bị khóa");
         }
         return account;
+    }
+
+    private boolean passwordMatches(Account account, String rawPassword) {
+        String stored = account.getPassword();
+        if (stored == null) {
+            return false;
+        }
+
+        boolean isAdmin = "ADMIN".equals(account.getRole());
+        boolean looksLikeBcrypt = stored.startsWith("$2");
+
+        if (isAdmin && !looksLikeBcrypt) {
+            return MessageDigest.isEqual(
+                    rawPassword.getBytes(StandardCharsets.UTF_8),
+                    stored.getBytes(StandardCharsets.UTF_8));
+        }
+        return passwordEncoder.matches(rawPassword, stored);
     }
 
     private String clean(String value) {

@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-// Nếu anh đã có entity Category thì dùng cái cũ, chỉ cần khớp tên field: id, name, parent, active
 @Entity
 @Table(name = "Categories")
 @Getter
@@ -22,6 +21,9 @@ public class Category {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ParentId")
     private Category parent;
+
+    @Column(name = "Description", length = 500)
+    private String description;
 
     @Column(name = "IsActive", nullable = false)
     private boolean active = true;
