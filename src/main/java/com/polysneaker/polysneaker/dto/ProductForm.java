@@ -21,4 +21,5 @@ public class ProductForm {
     private String description;
     private List<BigDecimal> sizes = new ArrayList<>();
     private List<Integer> stocks = new ArrayList<>();
+    private List<String> galleryImages = new ArrayList<>();
 }

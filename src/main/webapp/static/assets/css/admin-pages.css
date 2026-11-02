@@ -1,0 +1,409 @@
+/* ===== CSS riêng của trang quản lý chính sách (pages.jsp + page-form.jsp) ===== */
+.top {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 22px;
+}
+
+.btn-add {
+    height: 44px;
+    padding: 0 24px;
+    border: none;
+    border-radius: 999px;
+    background: var(--orange);
+    color: #fff;
+    font-weight: 800;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 10px 22px rgba(247, 148, 29, .3);
+    transition: background .15s;
+}
+
+.btn-add:hover {
+    background: var(--orange-dark);
+}
+
+.alert.ok {
+    background: #E7F6EC;
+    color: var(--ok);
+}
+
+.alert.err {
+    background: #FFE9E0;
+    color: var(--danger);
+}
+
+/* ----- Danh sách ----- */
+.pg-table {
+    overflow: hidden;
+}
+
+.table-wrap {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 820px;
+}
+
+th {
+    text-align: left;
+    font-size: 11.5px;
+    font-weight: 800;
+    letter-spacing: .6px;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 14px 16px;
+    background: #FFFAEF;
+    border-bottom: 1px solid #F8EEDA;
+}
+
+td {
+    padding: 14px 16px;
+    border-bottom: 1px solid #FBF3E1;
+    font-size: 14px;
+    vertical-align: middle;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+tbody tr:hover {
+    background: #FFFCF5;
+}
+
+.pg-name {
+    font-weight: 800;
+    color: var(--head);
+}
+
+.pg-slug {
+    display: inline-block;
+    margin-top: 3px;
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.pg-slug:hover {
+    color: var(--orange);
+    text-decoration: underline;
+}
+
+.pg-date {
+    font-size: 12.5px;
+    color: var(--muted);
+    white-space: nowrap;
+}
+
+.num {
+    font-weight: 700;
+    color: var(--head);
+}
+
+.tag {
+    display: inline-block;
+    padding: 3px 11px;
+    border-radius: 999px;
+    background: #FFEBC9;
+    color: var(--amber);
+    font-size: 11.5px;
+    font-weight: 800;
+}
+
+.tag.off {
+    background: #F3EEE6;
+    color: var(--muted);
+}
+
+.status {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.status.on {
+    background: #E7F6EC;
+    color: var(--ok);
+}
+
+.status.off {
+    background: #F3EEE6;
+    color: var(--muted);
+}
+
+.actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.btn-edit,
+.btn-del {
+    height: 36px;
+    padding: 0 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    transition: background .15s, border-color .15s, color .15s;
+}
+
+.btn-edit {
+    border: 1px solid var(--cream-border);
+    background: #fff;
+    color: var(--head);
+}
+
+.btn-edit:hover {
+    background: var(--cream);
+    border-color: var(--orange);
+}
+
+.btn-del {
+    border: 1px solid #F2B79B;
+    background: #fff;
+    color: var(--danger);
+}
+
+.btn-del:hover {
+    background: #FFEDE5;
+}
+
+.actions form {
+    margin: 0;
+}
+
+.empty {
+    padding: 54px 20px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.note {
+    margin-top: 14px;
+    font-size: 12.5px;
+    color: var(--muted);
+    line-height: 1.6;
+}
+
+/* ----- Form thêm/sửa ----- */
+.pg-form-card {
+    max-width: 860px;
+    padding: 28px;
+}
+
+.field {
+    margin-bottom: 18px;
+}
+
+.field-row {
+    display: grid;
+    grid-template-columns: 1fr 160px;
+    gap: 16px;
+}
+
+label.f {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--brown);
+    margin-bottom: 6px;
+}
+
+.req {
+    color: var(--danger);
+}
+
+.opt {
+    font-weight: 600;
+    color: var(--muted);
+}
+
+.pg-form-card input[type=text],
+.pg-form-card input[type=number],
+.pg-form-card select,
+.pg-form-card textarea {
+    width: 100%;
+    padding: 11px 14px;
+    border-radius: 12px;
+    border: 1.5px solid var(--cream-border);
+    background: var(--cream);
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--text);
+    outline: none;
+    transition: border-color .15s, background .15s;
+}
+
+.pg-form-card textarea {
+    min-height: 320px;
+    line-height: 1.6;
+    resize: vertical;
+}
+
+.pg-form-card input:focus,
+.pg-form-card select:focus,
+.pg-form-card textarea:focus {
+    border-color: var(--orange);
+    background: #fff;
+}
+
+.hint {
+    font-size: 11.5px;
+    color: var(--muted);
+    margin-top: 5px;
+    line-height: 1.55;
+}
+
+.hint code {
+    padding: 1px 6px;
+    border-radius: 6px;
+    background: #FFF3DE;
+    color: var(--head);
+    font-size: 11.5px;
+}
+
+.check {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--head);
+}
+
+.check input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--orange);
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 26px;
+}
+
+.btn-save {
+    height: 44px;
+    padding: 0 28px;
+    border: none;
+    border-radius: 999px;
+    background: var(--orange);
+    color: #fff;
+    font-weight: 800;
+    font-size: 14px;
+    cursor: pointer;
+    box-shadow: 0 10px 22px rgba(247, 148, 29, .3);
+    transition: background .15s;
+}
+
+.btn-save:hover {
+    background: var(--orange-dark);
+}
+
+.btn-cancel {
+    height: 44px;
+    padding: 0 24px;
+    border-radius: 999px;
+    border: 1.5px solid var(--cream-border);
+    background: #fff;
+    color: var(--head);
+    font-weight: 700;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.btn-cancel:hover {
+    background: var(--cream);
+}
+
+@media (max-width: 700px) {
+    .field-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+}
+
+/* ===== Danh sách chia theo cột footer ===== */
+.pg-group {
+    margin-bottom: 22px;
+}
+
+.pg-group-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 18px 20px;
+    border-bottom: 1px solid #F8EEDA;
+    background: #FFFAEF;
+}
+
+.pg-eyebrow {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .8px;
+    text-transform: uppercase;
+    color: var(--amber);
+}
+
+.pg-group-title {
+    margin: 2px 0 0;
+    font-size: 19px;
+    font-weight: 800;
+    color: var(--head);
+}
+
+.pg-group-sub {
+    margin: 3px 0 0;
+    font-size: 12.5px;
+    color: var(--muted);
+}
+
+.btn-add-sm {
+    height: 38px;
+    padding: 0 18px;
+    border: 1.5px solid var(--orange);
+    border-radius: 999px;
+    background: #fff;
+    color: var(--orange-dark);
+    font-weight: 800;
+    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    transition: background .15s, color .15s;
+}
+
+.btn-add-sm:hover {
+    background: var(--orange);
+    color: #fff;
+}
+
+.pg-content-ok {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--ok);
+}
+
+.pg-content-sample {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--danger);
+}

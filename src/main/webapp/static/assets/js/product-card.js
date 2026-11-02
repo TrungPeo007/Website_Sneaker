@@ -1,4 +1,3 @@
-// Thẻ sản phẩm: rê chuột ra thì ảnh sáng lại bằng vòng tròn lan ra từ chỗ chuột rời thẻ
 (function () {
     var cards = document.querySelectorAll('.p-card');
     if (!cards.length) return;
@@ -20,7 +19,7 @@
             card.style.setProperty('--cy', y + 'px');
 
             card.classList.remove('is-leave');
-            void card.offsetWidth;              // chạy lại animation
+            void card.offsetWidth;              
             card.classList.add('is-leave');
 
             clearTimeout(card._leaveTimer);

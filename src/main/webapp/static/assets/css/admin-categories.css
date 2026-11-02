@@ -1,0 +1,250 @@
+/* ===== CSS riêng của trang danh sách danh mục (categories.jsp) ===== */
+.top {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 22px;
+}
+
+.btn-add {
+    height: 44px;
+    padding: 0 24px;
+    border: none;
+    border-radius: 999px;
+    background: var(--orange);
+    color: #fff;
+    font-weight: 800;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 10px 22px rgba(247, 148, 29, .3);
+    transition: background .15s;
+}
+
+.btn-add:hover {
+    background: var(--orange-dark);
+}
+
+.alert.ok {
+    background: #E7F6EC;
+    color: var(--ok);
+}
+
+.alert.err {
+    background: #FFE9E0;
+    color: var(--danger);
+}
+
+/* Ô tìm kiếm (giống trang sản phẩm) */
+.tools {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.search-box {
+    position: relative;
+    width: 100%;
+    max-width: 340px;
+}
+
+.search-box svg {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    width: 18px;
+    height: 18px;
+    transform: translateY(-50%);
+    color: var(--orange);
+    pointer-events: none;
+}
+
+.search {
+    width: 100%;
+    padding: 10px 14px 10px 42px;
+    border-radius: 12px;
+    border: 1.5px solid var(--cream-border);
+    background: var(--cream);
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--text);
+    outline: none;
+    transition: border-color .15s, background .15s;
+}
+
+.search::placeholder {
+    color: #BFA784;
+}
+
+.search:focus {
+    border-color: var(--orange);
+    background: #fff;
+}
+
+/* Bảng */
+.card {
+    overflow: hidden;
+}
+
+.table-wrap {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 760px;
+}
+
+th {
+    text-align: left;
+    font-size: 11.5px;
+    font-weight: 800;
+    letter-spacing: .6px;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 14px 16px;
+    background: #FFFAEF;
+    border-bottom: 1px solid #F8EEDA;
+}
+
+td {
+    padding: 14px 16px;
+    border-bottom: 1px solid #FBF3E1;
+    font-size: 14px;
+    vertical-align: middle;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+tbody tr:hover {
+    background: #FFFCF5;
+}
+
+tr.is-root td {
+    background: #FFFAEF;
+}
+
+tr.is-root:hover td {
+    background: #FFF6E3;
+}
+
+.c-name {
+    font-weight: 800;
+    color: var(--head);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+tr.is-child .c-name {
+    padding-left: 26px;
+    font-weight: 700;
+}
+
+.tree {
+    color: #D9B98A;
+    font-weight: 400;
+}
+
+.tag {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 999px;
+    background: #FFEBC9;
+    color: var(--amber);
+    font-size: 10.5px;
+    font-weight: 800;
+}
+
+.c-desc {
+    color: var(--muted);
+    font-size: 13px;
+    max-width: 300px;
+}
+
+.num {
+    font-weight: 700;
+    color: var(--head);
+}
+
+.status {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.status.on {
+    background: #E7F6EC;
+    color: var(--ok);
+}
+
+.status.off {
+    background: #F3EEE6;
+    color: var(--muted);
+}
+
+.actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.btn-edit,
+.btn-del {
+    height: 36px;
+    padding: 0 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    transition: background .15s, border-color .15s, color .15s;
+}
+
+.btn-edit {
+    border: 1px solid var(--cream-border);
+    background: #fff;
+    color: var(--head);
+}
+
+.btn-edit:hover {
+    background: var(--cream);
+    border-color: var(--orange);
+}
+
+.btn-del {
+    border: 1px solid #F2B79B;
+    background: #fff;
+    color: var(--danger);
+}
+
+.btn-del:hover {
+    background: #FFEDE5;
+}
+
+.actions form {
+    margin: 0;
+}
+
+.empty {
+    padding: 54px 20px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.note {
+    margin-top: 14px;
+    font-size: 12.5px;
+    color: var(--muted);
+    line-height: 1.6;
+}

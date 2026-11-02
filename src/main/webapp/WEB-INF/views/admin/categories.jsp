@@ -1,129 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <%@ taglib uri="jakarta.tags.functions" prefix="fn" %>
-<c:set var="ctx" value="${pageContext.request.contextPath}" />
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Quản lý danh mục</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 
-    <style>
-        :root {
-            --orange: #F7941D; --orange-dark: #E8830C; --amber: #D97706;
-            --cream: #FFF6E6; --cream-border: #F8E3BC; --brown: #5C4430; --head: #6E3A12;
-            --bg: #FFFBF2; --text: #4A4038; --muted: #9A8C7E;
-            --side: #3B2412; --danger: #C2410C; --ok: #15803D;
-        }
-        * { box-sizing: border-box; }
-        [hidden] { display: none !important; }
-        body { margin: 0; min-height: 100vh; display: flex; font-family: 'Nunito Sans', Arial, sans-serif; letter-spacing: .1px; color: var(--text); background: var(--bg); -webkit-font-smoothing: antialiased; }
-        a { color: inherit; text-decoration: none; }
-        button { font-family: inherit; }
-
-        /* Sidebar */
-        .side { width: 252px; flex-shrink: 0; position: sticky; top: 0; align-self: flex-start; height: 100vh; display: flex; flex-direction: column; padding: 24px 16px; background: linear-gradient(180deg, var(--side) 0%, #2B190B 100%); color: #F3E4CE; }
-        .side-brand { display: flex; align-items: center; gap: 12px; padding: 0 8px 22px; border-bottom: 1px solid rgba(255, 226, 170, .14); }
-        .side-logo { width: 38px; height: 38px; border-radius: 50%; border: 1.5px solid rgba(247, 148, 29, .6); background: rgba(247, 148, 29, .14); color: var(--orange); font-weight: 800; font-size: 13px; display: flex; align-items: center; justify-content: center; }
-        .side-name { font-weight: 800; font-size: 15px; color: #FFF3DC; line-height: 1.2; }
-        .side-role { font-size: 10.5px; font-weight: 700; letter-spacing: 1px; color: #D9A25C; margin-top: 2px; }
-        .side-nav { display: flex; flex-direction: column; gap: 4px; margin-top: 22px; }
-        .side-nav a { display: flex; align-items: center; gap: 12px; padding: 11px 12px; border-radius: 12px; font-size: 14px; font-weight: 600; color: #E7D2B2; transition: background .15s, color .15s; }
-        .side-nav a:hover { background: rgba(255, 226, 170, .08); color: #fff; }
-        .side-nav a.active { background: rgba(247, 148, 29, .2); color: #FFB74D; box-shadow: inset 3px 0 0 var(--orange); }
-        .side-foot { margin-top: auto; padding: 14px 8px 0; border-top: 1px solid rgba(255, 226, 170, .14); }
-        .side-foot a { font-size: 13px; font-weight: 600; color: #D9BC93; padding: 8px 4px; display: block; }
-        .side-foot a:hover { color: #fff; }
-
-        /* Nội dung */
-        .content { flex: 1; min-width: 0; padding: 48px 40px 64px; }
-        .content-in { max-width: 1100px; margin: 0 auto; }
-        .top { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 22px; }
-        .page-title { font-size: 28px; font-weight: 800; color: var(--head); margin: 0; }
-        .page-sub { font-size: 13px; color: var(--muted); margin: 4px 0 0; }
-        .btn-add { height: 44px; padding: 0 24px; border: none; border-radius: 999px; background: var(--orange); color: #fff; font-weight: 800; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 10px 22px rgba(247, 148, 29, .3); transition: background .15s; }
-        .btn-add:hover { background: var(--orange-dark); }
-
-        .alert { margin-bottom: 16px; padding: 12px 18px; border-radius: 12px; font-size: 13.5px; font-weight: 700; }
-        .alert.err { background: #FFE9E0; color: var(--danger); }
-        .alert.ok { background: #E7F6EC; color: var(--ok); }
-
-        .tools { display: flex; gap: 10px; margin-bottom: 14px; }
-        .search { width: 100%; max-width: 340px; padding: 10px 14px; border-radius: 12px; border: 1.5px solid var(--cream-border); background: var(--cream); font-family: inherit; font-size: 14px; color: var(--text); outline: none; transition: border-color .15s, background .15s; }
-        .search:focus { border-color: var(--orange); background: #fff; }
-
-        .card { background: #fff; border: 1px solid #FBF0D6; border-radius: 20px; box-shadow: 0 8px 26px rgba(200, 140, 40, .07); overflow: hidden; }
-        .table-wrap { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 760px; }
-        th { text-align: left; font-size: 11.5px; font-weight: 800; letter-spacing: .6px; text-transform: uppercase; color: var(--muted); padding: 14px 16px; background: #FFFAEF; border-bottom: 1px solid #F8EEDA; }
-        td { padding: 14px 16px; border-bottom: 1px solid #FBF3E1; font-size: 14px; vertical-align: middle; }
-        tr:last-child td { border-bottom: none; }
-        tbody tr:hover { background: #FFFCF5; }
-        tr.is-root td { background: #FFFAEF; }
-        tr.is-root:hover td { background: #FFF6E3; }
-
-        .c-name { font-weight: 800; color: var(--head); display: flex; align-items: center; gap: 8px; }
-        tr.is-child .c-name { padding-left: 26px; font-weight: 700; }
-        .tree { color: #D9B98A; font-weight: 400; }
-        .tag { display: inline-block; padding: 2px 9px; border-radius: 999px; background: #FFEBC9; color: var(--amber); font-size: 10.5px; font-weight: 800; }
-        .c-desc { color: var(--muted); font-size: 13px; max-width: 300px; }
-        .num { font-weight: 700; color: var(--head); }
-
-        .status { display: inline-block; padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 800; }
-        .status.on { background: #E7F6EC; color: var(--ok); }
-        .status.off { background: #F3EEE6; color: var(--muted); }
-
-        .actions { display: flex; gap: 8px; align-items: center; }
-        .btn-edit, .btn-del { height: 36px; padding: 0 16px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; transition: background .15s, border-color .15s, color .15s; }
-        .btn-edit { border: 1px solid var(--cream-border); background: #fff; color: var(--head); }
-        .btn-edit:hover { background: var(--cream); border-color: var(--orange); }
-        .btn-del { border: 1px solid #F2B79B; background: #fff; color: var(--danger); }
-        .btn-del:hover { background: #FFEDE5; }
-        .actions form { margin: 0; }
-
-        .empty { padding: 54px 20px; text-align: center; color: var(--muted); font-size: 14px; }
-        .note { margin-top: 14px; font-size: 12.5px; color: var(--muted); line-height: 1.6; }
-
-        :focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
-
-        @media (max-width: 900px) {
-            body { flex-direction: column; }
-            .side { width: 100%; height: auto; position: static; padding: 14px 16px; }
-            .side-nav, .side-foot { display: none; }
-            .content { padding: 28px 18px 48px; }
-        }
-    </style>
-</head>
-<body>
-
-<aside class="side">
-    <div class="side-brand">
-        <span class="side-logo">PS</span>
-        <div>
-            <div class="side-name">PolySneaker</div>
-            <div class="side-role">Quản trị viên</div>
-        </div>
-    </div>
-    <nav class="side-nav">
-        <a href="${ctx}/admin">Tổng quan</a>
-        <a href="${ctx}/admin/banners">Banner</a>
-        <a href="${ctx}/admin/products">Sản phẩm</a>
-        <a href="${ctx}/admin/categories" class="active">Danh mục</a>
-        <a href="${ctx}/admin/images">Hình ảnh</a>
-        <a href="${ctx}/admin/blogs">Bài viết</a>
-        <a href="${ctx}/admin/orders">Đơn hàng</a>
-        <a href="${ctx}/admin/lookbooks">LookBook</a>
-        <a href="${ctx}/admin/customers">Khách hàng</a>
-    </nav>
-    <div class="side-foot"><a href="${ctx}/logout">Đăng xuất</a></div>
-</aside>
-
-<main class="content">
-    <div class="content-in">
+<c:set var="pageTitle" value="Quản lý danh mục" />
+<c:set var="adminMenu" value="categories" />
+<c:set var="pageCss" value="admin-categories.css" />
+<%@ include file="../layouts/admin-header.jsp" %>
 
         <div class="top">
             <div>
@@ -141,7 +23,13 @@
         </c:if>
 
         <div class="tools">
-            <input type="text" id="search" class="search" placeholder="Tìm theo tên danh mục...">
+            <div class="search-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="11" cy="11" r="7"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="text" id="search" class="search" placeholder="Tìm theo tên danh mục..." autocomplete="off">
+            </div>
         </div>
 
         <div class="card">
@@ -212,9 +100,6 @@
             Danh mục đang có sản phẩm hoặc danh mục con thì không xóa được, hãy chuyển sản phẩm đi hoặc chuyển sang "Đã ẩn".
         </p>
 
-    </div>
-</main>
-
 <script>
     // Hỏi xác nhận trước khi xóa
     document.addEventListener('submit', function (e) {
@@ -225,8 +110,6 @@
             e.preventDefault();
         }
     });
-
-    // Lọc nhanh theo tên
     (function () {
         var input = document.getElementById('search');
         var rows = document.querySelectorAll('#rows tr');
@@ -245,5 +128,4 @@
     })();
 </script>
 
-</body>
-</html>
+<%@ include file="../layouts/admin-footer.jsp" %>

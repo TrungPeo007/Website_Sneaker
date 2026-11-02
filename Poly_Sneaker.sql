@@ -1,10 +1,12 @@
 /* =====================================================================
-   POLY_SNEAKER - FULL DATABASE SCRIPT v2 (SQL Server 2016 SP1+)
+   POLY_SNEAKER - FULL DATABASE SCRIPT v3 (SQL Server 2016 SP1+)
    - Safe to re-run: tables are created only if missing, so existing
-     accounts / products / orders are NEVER dropped.
+     accounts / products / orders / pages are NEVER dropped.
    - Seed data is idempotent (no duplicates when run again).
    - Wipe everything: uncomment the RESET block right below first.
    - Run in SSMS, or sqlcmd with -I (needed for the filtered index).
+
+   v3: added dbo.SitePages (footer pages edited by admin: Dịch Vụ / Chính Sách)
 
    Default logins after running:
      admin       / admin123      (plain text on purpose, owner-only account)
@@ -23,10 +25,13 @@ GO
 /* ---------------------------------------------------------------------
    OPTIONAL RESET (uncomment ONLY when you want to wipe everything)
    ---------------------------------------------------------------------
+IF OBJECT_ID('dbo.vw_OrderSummary', 'V')        IS NOT NULL DROP VIEW dbo.vw_OrderSummary;
+IF OBJECT_ID('dbo.vw_CartDetail', 'V')          IS NOT NULL DROP VIEW dbo.vw_CartDetail;
 IF OBJECT_ID('dbo.vw_LookbookDetail', 'V')      IS NOT NULL DROP VIEW dbo.vw_LookbookDetail;
 IF OBJECT_ID('dbo.vw_BestSellingProducts', 'V') IS NOT NULL DROP VIEW dbo.vw_BestSellingProducts;
 IF OBJECT_ID('dbo.vw_ProductCards', 'V')        IS NOT NULL DROP VIEW dbo.vw_ProductCards;
 IF OBJECT_ID('dbo.sp_RegisterAccount', 'P')     IS NOT NULL DROP PROCEDURE dbo.sp_RegisterAccount;
+IF OBJECT_ID('dbo.SitePages', 'U')              IS NOT NULL DROP TABLE dbo.SitePages;
 IF OBJECT_ID('dbo.Reviews', 'U')                IS NOT NULL DROP TABLE dbo.Reviews;
 IF OBJECT_ID('dbo.OrderDetails', 'U')           IS NOT NULL DROP TABLE dbo.OrderDetails;
 IF OBJECT_ID('dbo.Orders', 'U')                 IS NOT NULL DROP TABLE dbo.Orders;
@@ -93,6 +98,11 @@ CREATE TABLE dbo.Categories (
     CONSTRAINT FK_Categories_Parent FOREIGN KEY (ParentId) REFERENCES dbo.Categories(CategoryId),
     CONSTRAINT CK_Categories_NotSelfParent CHECK (ParentId IS NULL OR ParentId <> CategoryId)
 );
+GO
+
+-- Old databases created before the Description column existed
+IF COL_LENGTH('dbo.Categories', 'Description') IS NULL
+    ALTER TABLE dbo.Categories ADD Description NVARCHAR(500) NULL;
 GO
 
 /* =====================================================
@@ -280,7 +290,33 @@ CREATE TABLE dbo.Reviews (
 GO
 
 /* =====================================================
-   10. INDEXES
+   10. SITE PAGES (footer pages edited by admin)
+   - Slug       : public URL is /pages/<slug>
+   - FooterGroup: SERVICE = under the "Dịch Vụ" heading
+                  POLICY  = under the "Chính Sách" heading
+                  NONE    = not shown in the footer (direct link only)
+   - Content    : plain text written by admin
+                  ("## " = heading, "- " = bullet, blank line = new paragraph)
+   ===================================================== */
+IF OBJECT_ID('dbo.SitePages', 'U') IS NULL
+CREATE TABLE dbo.SitePages (
+    PageId      INT IDENTITY(1,1) PRIMARY KEY,
+    Slug        VARCHAR(100)  NOT NULL,
+    Title       NVARCHAR(200) NOT NULL,
+    Content     NVARCHAR(MAX) NULL,
+    FooterGroup VARCHAR(20)   NOT NULL DEFAULT 'POLICY',
+    SortOrder   INT           NOT NULL DEFAULT 0,
+    IsActive    BIT           NOT NULL DEFAULT 1,
+    CreatedAt   DATETIME      NOT NULL DEFAULT GETDATE(),
+    UpdatedAt   DATETIME      NULL,
+
+    CONSTRAINT UQ_SitePages_Slug  UNIQUE (Slug),
+    CONSTRAINT CK_SitePages_Group CHECK (FooterGroup IN ('SERVICE', 'POLICY', 'NONE'))
+);
+GO
+
+/* =====================================================
+   11. INDEXES
    ===================================================== */
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_Categories_ParentId' AND object_id = OBJECT_ID('dbo.Categories'))
     CREATE INDEX IX_Categories_ParentId ON dbo.Categories(ParentId);
@@ -306,10 +342,12 @@ IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_OrderDetails_ProductDe
     CREATE INDEX IX_OrderDetails_ProductDetailId ON dbo.OrderDetails(ProductDetailId);
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_Reviews_ProductId' AND object_id = OBJECT_ID('dbo.Reviews'))
     CREATE INDEX IX_Reviews_ProductId ON dbo.Reviews(ProductId);
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_SitePages_Footer' AND object_id = OBJECT_ID('dbo.SitePages'))
+    CREATE INDEX IX_SitePages_Footer ON dbo.SitePages(FooterGroup, SortOrder) INCLUDE (Slug, Title, IsActive);
 GO
 
 /* =====================================================
-   11. ACCOUNTS SEED
+   12. ACCOUNTS SEED
    - ADMIN: plain-text password by design (owner-only account).
      * No admin yet            -> create with password admin123
      * Admin still has the old placeholder -> set to admin123
@@ -332,8 +370,13 @@ IF NOT EXISTS (SELECT 1 FROM dbo.Accounts WHERE Username = N'customer01')
             N'Khách Hàng Mẫu', '0900000001', N'Thành phố Hồ Chí Minh');
 GO
 
+/* Forgot the admin password? Uncomment the line below, run it ONCE, then comment it again.
+UPDATE dbo.Accounts SET Password = N'admin123' WHERE Username = N'admin';
+*/
+GO
+
 /* =====================================================
-   12. REGISTER PROCEDURE
+   13. REGISTER PROCEDURE
    (the Spring app registers through AccountService; this procedure
    is kept for manual use / testing and expects an already-hashed password)
    ===================================================== */
@@ -359,7 +402,7 @@ END
 GO
 
 /* =====================================================
-   13. VIEWS
+   14. VIEWS
    ===================================================== */
 
 -- Everything the product card needs, in one query
@@ -462,7 +505,7 @@ GROUP BY o.OrderId, o.AccountId, a.Username, o.ReceiverName, o.Phone, o.Address,
 GO
 
 /* =====================================================
-   14. CATALOG SEED (idempotent: running again adds no duplicates)
+   15. CATALOG SEED (idempotent: running again adds no duplicates)
    ===================================================== */
 IF NOT EXISTS (SELECT 1 FROM dbo.Categories WHERE CategoryName = N'Shoes')
     INSERT INTO dbo.Categories (CategoryName, ParentId) VALUES (N'Shoes', NULL);
@@ -585,7 +628,84 @@ WHERE NOT EXISTS (
 GO
 
 /* =====================================================
-   15. VERIFICATION QUERIES
+   16. SITE PAGES SEED (idempotent)
+   5 sample pages matching the footer links. Admin edits the real content
+   in Admin > Trang Nội Dung. A page whose content still starts with
+   "Nội dung mẫu" is shown as "Chưa nhập nội dung" in the admin list.
+   ===================================================== */
+INSERT INTO dbo.SitePages (Slug, Title, Content, FooterGroup, SortOrder)
+SELECT v.Slug, v.Title, v.Content, v.FooterGroup, v.SortOrder
+FROM (VALUES
+(N'warranty', N'Quy trình Bảo Hành tại cửa hàng', N'Nội dung mẫu: quản trị viên vào Admin > Trang Nội Dung để chỉnh sửa cho đúng với cửa hàng.
+
+## Điều kiện bảo hành
+- Sản phẩm mua tại PolySneaker, còn thông tin đơn hàng hoặc hóa đơn.
+- Lỗi do nhà sản xuất như bong keo, đứt chỉ, hở đế trong thời gian bảo hành.
+
+## Quy trình
+- Bước 1: Mang sản phẩm đến cửa hàng hoặc gọi hotline 1900 3256.
+- Bước 2: Nhân viên kiểm tra tình trạng sản phẩm.
+- Bước 3: Cửa hàng xử lý và hẹn ngày nhận lại sản phẩm.', 'SERVICE', 1),
+
+(N'terms', N'Điều khoản và điều kiện', N'Nội dung mẫu: quản trị viên vào Admin > Trang Nội Dung để chỉnh sửa cho đúng với cửa hàng.
+
+## Quy định chung
+Khi mua hàng tại PolySneaker, khách hàng đồng ý với các điều khoản dưới đây.
+
+## Đơn hàng
+- Đơn hàng chỉ được xác nhận khi cửa hàng còn đủ sản phẩm và size khách chọn.
+- Cửa hàng có thể liên hệ khách để xác nhận thông tin trước khi giao.
+
+## Giá và thanh toán
+- Giá hiển thị trên website đã bao gồm VAT.
+- Khách có thể thanh toán khi nhận hàng (COD) hoặc chuyển khoản.', 'POLICY', 1),
+
+(N'privacy', N'Chính sách bảo mật', N'Nội dung mẫu: quản trị viên vào Admin > Trang Nội Dung để chỉnh sửa cho đúng với cửa hàng.
+
+## Thông tin chúng tôi thu thập
+- Họ tên, số điện thoại, địa chỉ giao hàng, email khi khách đăng ký hoặc đặt hàng.
+
+## Mục đích sử dụng
+- Xử lý đơn hàng, giao hàng và chăm sóc khách hàng.
+
+## Cam kết
+PolySneaker không bán hoặc chia sẻ thông tin cá nhân của khách cho bên thứ ba ngoài mục đích giao hàng.', 'POLICY', 2),
+
+(N'refund-policy', N'Hoàn tiền và đổi trả', N'Nội dung mẫu: quản trị viên vào Admin > Trang Nội Dung để chỉnh sửa cho đúng với cửa hàng.
+
+## Thời gian đổi trả
+- Hỗ trợ đổi size, đổi sản phẩm trong 30 ngày kể từ ngày nhận hàng.
+
+## Điều kiện
+- Sản phẩm còn nguyên tem, hộp, chưa qua sử dụng.
+- Có thông tin đơn hàng hoặc hóa đơn mua hàng.
+
+## Hoàn tiền
+Cửa hàng hoàn tiền cho khách khi sản phẩm lỗi hoặc không còn hàng để đổi.', 'POLICY', 3),
+
+(N'shipping-policy', N'Vận chuyển và giao hàng', N'Nội dung mẫu: quản trị viên vào Admin > Trang Nội Dung để chỉnh sửa cho đúng với cửa hàng.
+
+## Thời gian giao hàng
+- Giao nhanh trong 2 giờ với một số khu vực nội thành, nhân viên sẽ báo khi xác nhận đơn.
+- Các khu vực khác: thời gian giao do cửa hàng thông báo khi xác nhận đơn.
+
+## Đóng gói
+- Sản phẩm được đóng hộp 2 lớp chống va đập.
+
+## Phí vận chuyển
+Phí giao hàng được báo cho khách trước khi xác nhận đơn.', 'POLICY', 4)
+) AS v(Slug, Title, Content, FooterGroup, SortOrder)
+WHERE NOT EXISTS (SELECT 1 FROM dbo.SitePages sp WHERE sp.Slug = v.Slug);
+GO
+
+-- Pages created by the previous version still mention the old menu name: fix the sample text only
+UPDATE dbo.SitePages
+SET Content = REPLACE(Content, N'Admin > Chính Sách', N'Admin > Trang Nội Dung')
+WHERE Content LIKE N'Nội dung mẫu:%';
+GO
+
+/* =====================================================
+   17. VERIFICATION QUERIES
    (the Password column is not selected on purpose)
    ===================================================== */
 SELECT 'Accounts' AS TableName, COUNT(*) AS TotalRows FROM dbo.Accounts
@@ -598,29 +718,12 @@ UNION ALL SELECT 'LookbookItems',  COUNT(*) FROM dbo.LookbookItems
 UNION ALL SELECT 'CartItems',      COUNT(*) FROM dbo.CartItems
 UNION ALL SELECT 'Orders',         COUNT(*) FROM dbo.Orders
 UNION ALL SELECT 'OrderDetails',   COUNT(*) FROM dbo.OrderDetails
-UNION ALL SELECT 'Reviews',        COUNT(*) FROM dbo.Reviews;
+UNION ALL SELECT 'Reviews',        COUNT(*) FROM dbo.Reviews
+UNION ALL SELECT 'SitePages',      COUNT(*) FROM dbo.SitePages;
 
 SELECT * FROM dbo.vw_ProductCards;
 SELECT TOP 5 * FROM dbo.vw_BestSellingProducts ORDER BY TotalSold DESC;
 SELECT * FROM dbo.vw_LookbookDetail ORDER BY LookbookSortOrder, ItemSortOrder;
 SELECT AccountId, Username, Email, Role, IsActive, CreatedAt FROM dbo.Accounts ORDER BY AccountId;
+SELECT PageId, Slug, Title, FooterGroup, SortOrder, IsActive FROM dbo.SitePages ORDER BY FooterGroup DESC, SortOrder;
 GO
-
-USE Poly_Sneaker;
-SELECT Username, Role, IsActive, LEN(Password) AS PassLen, LEFT(Password, 4) AS PassHead
-FROM dbo.Accounts;
-
-UPDATE dbo.Accounts
-SET Password = N'admin123'
-WHERE Username = N'admin';
-
-SELECT *From Accounts 
-
-SELECT*From Products
-
-USE Poly_Sneaker;
-
-SELECT CategoryId, CategoryName, ParentId, IsActive FROM dbo.Categories;
-
-   IF COL_LENGTH('dbo.Categories', 'Description') IS NULL
-       ALTER TABLE dbo.Categories ADD Description NVARCHAR(500) NULL;

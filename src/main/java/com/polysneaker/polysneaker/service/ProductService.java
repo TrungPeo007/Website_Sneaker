@@ -7,24 +7,34 @@ import com.polysneaker.polysneaker.entity.ProductDetail;
 import com.polysneaker.polysneaker.repository.CategoryRepository;
 import com.polysneaker.polysneaker.repository.ProductRepository;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 public class ProductService {
 
+    private static final int MAX_GALLERY = 10;   // [ẢNH PHỤ]
+
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final JdbcTemplate jdbcTemplate;     // [ẢNH PHỤ]
 
-    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository) {
+    public ProductService(ProductRepository productRepository,
+                          CategoryRepository categoryRepository,
+                          JdbcTemplate jdbcTemplate) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     // ---------- Đọc ----------
@@ -65,6 +75,8 @@ public class ProductService {
             f.getStocks().add(d.getStockQuantity());
             if (f.getDescription() == null) f.setDescription(d.getDescription());
         }
+        // [ẢNH PHỤ] nạp ảnh phụ đã lưu lên form (bỏ ảnh trùng với ảnh đại diện)
+        f.setGalleryImages(loadGallery(p.getId(), p.getMainImageUrl()));
         return f;
     }
 
@@ -99,6 +111,14 @@ public class ProductService {
 
         if (f.getBadge() != null && f.getBadge().trim().length() > 30) {
             errors.put("badge", "Nhãn tối đa 30 ký tự.");
+        }
+
+        // [ẢNH PHỤ] tối đa 10 ảnh
+        if (f.getGalleryImages() != null) {
+            long count = f.getGalleryImages().stream().filter(s -> s != null && !s.isBlank()).count();
+            if (count > MAX_GALLERY) {
+                errors.put("galleryImages", "Chỉ được tối đa " + MAX_GALLERY + " ảnh phụ.");
+            }
         }
 
         int validSizes = 0;
@@ -165,13 +185,52 @@ public class ProductService {
             detail.setDescription(desc);
         }
 
-        productRepository.save(p);
+        Product saved = productRepository.save(p);
+
+        // [ẢNH PHỤ] đặt SAU khi lưu: sản phẩm mới chỉ có id sau bước này.
+        // Cùng một transaction nên nếu lỗi thì cả sản phẩm lẫn ảnh đều được hoàn tác.
+        replaceGallery(saved.getId(), f.getGalleryImages(), saved.getMainImageUrl());
     }
 
     // ---------- Xóa ----------
     @Transactional
     public void delete(Integer id) {
         productRepository.deleteById(id);   // size + ảnh phụ bị xóa theo (ON DELETE CASCADE)
+    }
+
+    // ---------- [ẢNH PHỤ] đọc / ghi bảng ProductImages ----------
+    private List<String> loadGallery(Integer productId, String mainImage) {
+        String main = mainImage == null ? "" : mainImage.trim();
+        List<String> out = new ArrayList<>();
+        List<String> rows = jdbcTemplate.queryForList(
+                "SELECT ImageUrl FROM ProductImages WHERE ProductId = ? ORDER BY SortOrder, ImageId",
+                String.class, productId);
+        for (String u : rows) {
+            if (u == null || u.isBlank()) continue;
+            String v = u.trim();
+            if (!v.equals(main)) out.add(v);
+        }
+        return out;
+    }
+
+    /** Ghi lại toàn bộ ảnh phụ theo đúng thứ tự trên form: xóa hết cũ rồi chèn lại. */
+    private void replaceGallery(Integer productId, List<String> names, String mainImage) {
+        jdbcTemplate.update("DELETE FROM ProductImages WHERE ProductId = ?", productId);
+        if (names == null) return;
+
+        Set<String> seen = new HashSet<>();
+        if (mainImage != null && !mainImage.isBlank()) {
+            seen.add(mainImage.trim());                // không lặp lại ảnh đại diện
+        }
+        int order = 1;
+        for (String n : names) {
+            if (n == null) continue;
+            String v = n.trim();
+            if (v.isEmpty() || v.length() > 500 || !seen.add(v)) continue;   // bỏ trống, quá dài, trùng
+            jdbcTemplate.update(
+                    "INSERT INTO ProductImages (ProductId, ImageUrl, SortOrder) VALUES (?, ?, ?)",
+                    productId, v, order++);
+        }
     }
 
     private static String blankToNull(String s) {

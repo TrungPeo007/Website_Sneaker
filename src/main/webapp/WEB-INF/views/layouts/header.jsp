@@ -104,8 +104,8 @@
                                 </div>
                             </div>
 
-                            <a href="${ctx}/#lookbook" class="${activeMenu == 'lookbook' ? 'active' : ''}">LookBook</a>
-                            <a href="${ctx}/#blog" class="${activeMenu == 'blog' ? 'active' : ''}">Blog</a>
+                            <a href="${ctx}/#lookbook" class="${activeMenu == 'lookbook' ? 'active' : ''}">Bộ Sưu Tập</a>
+                            <a href="${ctx}/#blog" class="${activeMenu == 'blog' ? 'active' : ''}">Bài Viết</a>
                     </nav>
 
                     <div class="header-actions">

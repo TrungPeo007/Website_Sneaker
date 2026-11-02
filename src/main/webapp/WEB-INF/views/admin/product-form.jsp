@@ -84,6 +84,32 @@
                     </div>
                 </div>
 
+                <%-- ===== Ảnh phụ (các góc chụp khác) ===== --%>
+                <div class="full">
+                    <label class="f">Ảnh phụ <span class="opt">(các góc chụp khác, tối đa 10 ảnh)</span></label>
+                    <input type="file" id="galleryFile" accept="image/png,image/jpeg,image/webp,image/gif" multiple hidden>
+
+                    <div class="gal-grid" id="galGrid">
+                        <c:forEach var="g" items="${form.galleryImages}">
+                            <div class="gal-item">
+                                <input type="hidden" name="galleryImages" value="<c:out value='${g}'/>">
+                                <img alt="">
+                                <span class="gal-num"></span>
+                                <div class="gal-tools">
+                                    <button type="button" class="gal-btn" data-act="left" aria-label="Dời sang trái">‹</button>
+                                    <button type="button" class="gal-btn" data-act="right" aria-label="Dời sang phải">›</button>
+                                    <button type="button" class="gal-btn del" data-act="del" aria-label="Xóa ảnh">×</button>
+                                </div>
+                            </div>
+                        </c:forEach>
+                        <button type="button" class="gal-add" id="galAdd">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                            Thêm ảnh
+                        </button>
+                    </div>
+                    <div class="hint" id="galHint">Chọn được nhiều ảnh cùng lúc. Thứ tự các ô là thứ tự hiển thị ở trang sản phẩm, ảnh đại diện luôn hiện đầu tiên.</div>
+                </div>
+
                 <div class="full">
                     <label class="f" for="description">Mô tả</label>
                     <textarea id="description" name="description"><c:out value="${form.description}"/></textarea>
@@ -261,6 +287,184 @@
         });
 
         show();
+    })();
+
+    // Ảnh phụ: chọn nhiều ảnh, tải lên, đổi thứ tự, xóa
+    (function () {
+        var ctx = '${ctx}';
+        var MAX_SIZE = 5 * 1024 * 1024;
+        var MAX_COUNT = 10;
+
+        var form = document.getElementById('productForm');
+        var grid = document.getElementById('galGrid');
+        var addBtn = document.getElementById('galAdd');
+        var fileInput = document.getElementById('galleryFile');
+        var hint = document.getElementById('galHint');
+        var defaultHint = hint.textContent;
+        var uploading = false;
+
+        function resolve(v) {
+            v = (v || '').trim();
+            if (!v) return '';
+            if (/^https?:\/\//i.test(v)) return v;
+            if (v.charAt(0) === '/') return ctx + v;
+            return ctx + '/static/assets/images/' + v;
+        }
+
+        function setMsg(message, type) {
+            hint.textContent = message;
+            hint.className = 'hint' + (type ? ' ' + type : '');
+        }
+
+        function items() { return Array.prototype.slice.call(grid.querySelectorAll('.gal-item')); }
+
+        // Cập nhật số thứ tự, khóa nút ‹ › ở đầu/cuối, ẩn nút thêm khi đủ ảnh
+        function refresh() {
+            var list = items();
+            list.forEach(function (it, i) {
+                it.querySelector('.gal-num').textContent = i + 1;
+                it.querySelector('[data-act="left"]').disabled = (i === 0);
+                it.querySelector('[data-act="right"]').disabled = (i === list.length - 1);
+            });
+            addBtn.style.display = list.length >= MAX_COUNT ? 'none' : '';
+        }
+
+        function buildTools(item) {
+            var tools = document.createElement('div');
+            tools.className = 'gal-tools';
+            [['left', '‹', 'Dời sang trái'], ['right', '›', 'Dời sang phải'], ['del', '×', 'Xóa ảnh']].forEach(function (b) {
+                var btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'gal-btn' + (b[0] === 'del' ? ' del' : '');
+                btn.setAttribute('data-act', b[0]);
+                btn.setAttribute('aria-label', b[2]);
+                btn.textContent = b[1];
+                tools.appendChild(btn);
+            });
+            item.appendChild(tools);
+        }
+
+        function addItem(fileName) {
+            var item = document.createElement('div');
+            item.className = 'gal-item';
+
+            var input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'galleryImages';
+            input.value = fileName;
+
+            var im = document.createElement('img');
+            im.alt = '';
+            im.src = resolve(fileName);
+            im.onerror = function () { item.classList.add('broken'); };
+
+            var num = document.createElement('span');
+            num.className = 'gal-num';
+
+            item.appendChild(input);
+            item.appendChild(im);
+            item.appendChild(num);
+            buildTools(item);
+            grid.insertBefore(item, addBtn);
+        }
+
+        // Ảnh đã có sẵn khi mở trang sửa: gắn đường dẫn ảnh
+        items().forEach(function (it) {
+            var im = it.querySelector('img');
+            var v = it.querySelector('input[name="galleryImages"]').value;
+            im.src = resolve(v);
+            im.onerror = function () { it.classList.add('broken'); };
+        });
+
+        // Đổi thứ tự / xóa
+        grid.addEventListener('click', function (e) {
+            var btn = e.target.closest('.gal-btn');
+            if (!btn) return;
+            var item = btn.closest('.gal-item');
+            var act = btn.getAttribute('data-act');
+            if (act === 'del') {
+                item.remove();
+            } else if (act === 'left' && item.previousElementSibling && item.previousElementSibling.classList.contains('gal-item')) {
+                grid.insertBefore(item, item.previousElementSibling);
+            } else if (act === 'right' && item.nextElementSibling && item.nextElementSibling.classList.contains('gal-item')) {
+                grid.insertBefore(item.nextElementSibling, item);
+            }
+            setMsg(defaultHint, '');
+            refresh();
+        });
+
+        addBtn.addEventListener('click', function () { fileInput.click(); });
+
+        function uploadOne(file) {
+            var data = new FormData();
+            data.append('file', file);
+            return fetch(ctx + '/admin/upload/image', { method: 'POST', body: data, credentials: 'same-origin' })
+                .then(function (res) {
+                    return res.json().catch(function () { return {}; }).then(function (body) {
+                        if (!res.ok || !body.fileName) {
+                            throw new Error(body.error || 'Tải ảnh thất bại, hãy thử lại hoặc đăng nhập lại.');
+                        }
+                        return body.fileName;
+                    });
+                });
+        }
+
+        fileInput.addEventListener('change', function () {
+            var files = Array.prototype.slice.call(fileInput.files);
+            fileInput.value = '';
+            if (!files.length) return;
+
+            var room = MAX_COUNT - items().length;
+            var notes = [];
+            if (files.length > room) {
+                notes.push('Chỉ thêm được ' + room + ' ảnh nữa, các ảnh dư đã bị bỏ qua.');
+                files = files.slice(0, room);
+            }
+
+            var valid = files.filter(function (f) {
+                if (!/^image\/(png|jpe?g|webp|gif)$/i.test(f.type)) { notes.push('"' + f.name + '" không phải JPG, PNG, WEBP hoặc GIF.'); return false; }
+                if (f.size > MAX_SIZE) { notes.push('"' + f.name + '" quá lớn (tối đa 5MB).'); return false; }
+                return true;
+            });
+
+            if (!valid.length) { setMsg(notes.join(' ') || defaultHint, 'err'); return; }
+
+            uploading = true;
+            addBtn.disabled = true;
+            var done = 0, failed = 0;
+            setMsg('Đang tải ảnh 1/' + valid.length + '...', '');
+
+            // Tải lần lượt từng ảnh để giữ đúng thứ tự đã chọn
+            valid.reduce(function (chain, file) {
+                return chain.then(function () {
+                    return uploadOne(file).then(function (name) {
+                        addItem(name);
+                        refresh();
+                    }).catch(function (err) {
+                        failed++;
+                        notes.push('"' + file.name + '": ' + err.message);
+                    }).then(function () {
+                        done++;
+                        if (done < valid.length) setMsg('Đang tải ảnh ' + (done + 1) + '/' + valid.length + '...', '');
+                    });
+                });
+            }, Promise.resolve()).then(function () {
+                uploading = false;
+                addBtn.disabled = false;
+                if (notes.length) setMsg(notes.join(' '), 'err');
+                else setMsg('Đã tải ' + valid.length + ' ảnh lên thành công.', 'ok');
+            });
+        });
+
+        // Không cho gửi form khi ảnh đang tải dở
+        form.addEventListener('submit', function (e) {
+            if (uploading) {
+                e.preventDefault();
+                setMsg('Ảnh đang tải lên, vui lòng đợi một chút rồi bấm lưu.', 'err');
+            }
+        });
+
+        refresh();
     })();
 </script>
 
