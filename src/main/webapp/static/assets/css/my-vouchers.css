@@ -1,0 +1,173 @@
+/* Trang Voucher của tôi (views/my-vouchers.jsp) */
+.vc {
+    --o: #F7941D;
+    --od: #E8830C;
+    --am: #D97706;
+    --head: #6E3A12;
+    --brown: #5C4430;
+    --muted: #9A8C7E;
+    color: var(--brown);
+}
+
+.vc *,
+.vc *::before,
+.vc *::after {
+    box-sizing: border-box;
+    border-radius: 0 !important;
+}
+
+.vc-hero {
+    max-width: 700px;
+    margin-bottom: 36px;
+}
+
+.vc-hero p {
+    margin: 14px 0 0;
+    font-size: 15.5px;
+    line-height: 1.75;
+    color: #8B6B4A;
+}
+
+.vc-rule {
+    display: block;
+    width: 72px;
+    height: 3px;
+    margin-top: 22px;
+    background: var(--o);
+}
+
+.vc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 26px;
+    padding-bottom: 30px;
+}
+
+.vc-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 22px 22px 20px 26px;
+    background: #fff;
+    border-left: 5px solid var(--o);
+    box-shadow: 0 14px 28px -14px rgba(110, 58, 18, .35);
+}
+
+.vc-card.off {
+    border-left-color: #D9CDBE;
+    box-shadow: none;
+    border-top: 1px solid #EFE4D2;
+    border-right: 1px solid #EFE4D2;
+    border-bottom: 1px solid #EFE4D2;
+}
+
+.vc-card.off .vc-off,
+.vc-card.off .vc-title {
+    color: var(--muted);
+}
+
+.vc-off {
+    font-size: 30px;
+    line-height: 1.1;
+    font-weight: 800;
+    letter-spacing: -.5px;
+    color: var(--head);
+}
+
+.vc-badge {
+    position: absolute;
+    top: 18px;
+    right: 16px;
+    padding: 4px 12px;
+    background: #FFF3DD;
+    color: var(--am);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .8px;
+    text-transform: uppercase;
+    transform: skewX(-12deg);
+}
+
+.vc-card.off .vc-badge {
+    background: #F1EBE2;
+    color: var(--muted);
+}
+
+.vc-title {
+    margin: 10px 0 12px;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--brown);
+}
+
+.vc-meta {
+    margin: 0 0 4px;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.vc-meta:last-of-type {
+    margin-bottom: 16px;
+}
+
+.vc-code {
+    display: flex;
+    gap: 8px;
+    margin-top: auto;
+}
+
+.vc-code input {
+    flex: 1;
+    min-width: 0;
+    height: 40px;
+    padding: 0 12px;
+    border: 1.5px dashed #F2D9A8;
+    background: #FFFDF8;
+    font: 700 14px/1 monospace;
+    letter-spacing: 1px;
+    color: var(--head);
+}
+
+.vc-copy {
+    height: 40px;
+    padding: 0 18px;
+    border: 0;
+    cursor: pointer;
+    background: var(--o);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: background .25s;
+}
+
+.vc-copy:hover {
+    background: var(--head);
+}
+
+.vc-card.off .vc-copy {
+    background: #D9CDBE;
+    cursor: default;
+}
+
+.vc-empty {
+    padding: 80px 20px;
+    text-align: center;
+    border: 1.5px dashed #F2D9A8;
+    background: #FFFDF8;
+    color: var(--muted);
+}
+
+.vc-empty b {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 18px;
+    color: var(--head);
+}
+
+@media (max-width: 560px) {
+    .vc-grid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -121,7 +121,7 @@
     aspect-ratio: 1 / 1;
     padding: 4px;
     border: 2px solid transparent;
-    border-radius: 12px;
+    border-radius: 0;
     background: #F7F3EA;
     cursor: pointer;
     opacity: .6;
@@ -378,7 +378,7 @@
     height: 44px;
     padding: 0 14px;
     border: 1.5px solid var(--line);
-    border-radius: 12px;
+    border-radius: 0;
     background: #fff;
     color: var(--head);
     font: inherit;
@@ -541,7 +541,7 @@
 
 .pd-perk {
     padding: 12px;
-    border-radius: 14px;
+    border-radius: 0;
     background: var(--cream);
     border: 1px solid var(--line);
     font-size: 12.5px;
@@ -556,7 +556,7 @@
     margin-bottom: 2px;
 }
 
-/* ===== Mô tả + gợi ý ===== */
+/* ===== Khối "Có thể bạn cũng thích" ===== */
 .pd-sec {
     margin-top: 44px;
 }
@@ -568,19 +568,521 @@
     color: var(--head);
 }
 
-.pd-desc {
-    padding: 22px 24px;
-    border: 1px solid #FBF0D6;
-    border-radius: 18px;
-    background: #fff;
-    font-size: 14.5px;
-    line-height: 1.7;
-    white-space: pre-line;
-    box-shadow: 0 8px 26px rgba(200, 140, 40, .06);
+/* =====================================================
+   MÔ TẢ SẢN PHẨM - phong cách tạp chí
+   ===================================================== */
+.pd-story {
+    --page: #FFF9F0; /* đổi cho trùng màu nền trang của anh */
+    position: relative;
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: 64px;
+    margin-top: 64px;
+    padding: 48px 0 24px;
+    border-top: 1px solid var(--line);
+    overflow: hidden;
 }
 
-.pd-desc.empty {
+/* đường kẻ cam vẽ ra từ trái */
+.pd-story::before {
+    content: "";
+    position: absolute;
+    top: -1px;
+    left: 0;
+    height: 3px;
+    width: 0;
+    background: var(--o);
+    transition: width 1.1s cubic-bezier(.2, .7, .2, 1);
+}
+
+.pd-story.in::before {
+    width: 100%;
+}
+
+/* chữ khổng lồ làm nền */
+.pd-story-ghost {
+    position: absolute;
+    right: -10px;
+    top: 14px;
+    z-index: 0;
+    font-size: clamp(110px, 17vw, 240px);
+    font-weight: 900;
+    line-height: .9;
+    letter-spacing: -.03em;
+    text-transform: uppercase;
+    color: transparent;
+    -webkit-text-stroke: 1.5px rgba(247, 148, 29, .22);
+    white-space: nowrap;
+    pointer-events: none;
+    user-select: none;
+    will-change: transform;
+}
+
+/* cột trái: tiêu đề dính */
+.pd-story-side {
+    position: sticky;
+    top: 100px;
+    align-self: start;
+    z-index: 1;
+    opacity: 0;
+    transform: translateX(-24px);
+    transition: opacity .7s .15s, transform .7s .15s;
+}
+
+.pd-story.in .pd-story-side {
+    opacity: 1;
+    transform: none;
+}
+
+.pd-story-no {
+    --d: 0s; /* lệch thời gian để 3 số không lấp lánh cùng lúc */
+    position: relative;
+    display: block;
+    width: fit-content;
+    font-size: 64px;
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -.04em;
+    color: var(--o); /* dự phòng nếu trình duyệt không hỗ trợ clip chữ */
+    /* vệt sáng chạy ngang qua chữ */
+    background: linear-gradient(105deg,
+            var(--o) 0%, var(--o) 38%,
+            #FFE9B0 48%, #FFFFFF 50%, #FFE9B0 52%,
+            var(--o) 62%, var(--o) 100%);
+    background-size: 260% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: pd-shine 3.2s linear infinite;
+    animation-delay: var(--d);
+}
+
+#pdMatSec .pd-story-no {
+    --d: -1.1s;
+}
+
+#pdSpecSec .pd-story-no {
+    --d: -2.2s;
+}
+
+/* hai ngôi sao nhỏ nhấp nháy trên chữ */
+.pd-story-no::before,
+.pd-story-no::after {
+    content: "";
+    position: absolute;
+    background: #fff;
+    clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+    opacity: 0;
+    pointer-events: none;
+    animation: pd-twinkle 2.4s ease-in-out infinite;
+}
+
+.pd-story-no::before {
+    top: 8%;
+    left: 14%;
+    width: 18px;
+    height: 18px;
+    animation-delay: calc(var(--d) - .2s);
+}
+
+.pd-story-no::after {
+    top: 58%;
+    left: 72%;
+    width: 13px;
+    height: 13px;
+    animation-delay: calc(var(--d) - 1.4s);
+}
+
+@keyframes pd-shine {
+    from {
+        background-position: 130% 0;
+    }
+
+    to {
+        background-position: -130% 0;
+    }
+}
+
+@keyframes pd-twinkle {
+
+    0%,
+    100% {
+        opacity: 0;
+        transform: scale(.2) rotate(0deg);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1) rotate(90deg);
+    }
+}
+
+.pd-story-side h2 {
+    margin: 14px 0 0;
+    font-size: 26px;
+    line-height: 1.15;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .02em;
+    color: var(--head);
+}
+
+.pd-story-tick {
+    display: block;
+    width: 44px;
+    height: 3px;
+    margin-top: 20px;
+    background: var(--head);
+}
+
+/* cột phải */
+.pd-story-main {
+    position: relative;
+    z-index: 1;
+    min-width: 0;
+}
+
+.pd-story-body {
+    position: relative;
+    overflow: hidden;
+    transition: max-height .6s ease;
+}
+
+.pd-story-body.clamp::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 130px;
+    background: linear-gradient(to bottom, rgba(255, 249, 240, 0), var(--page) 88%);
+    pointer-events: none;
+}
+
+/* câu dẫn: chữ lớn + chữ cái đầu cỡ lớn */
+.pd-lead {
+    margin: 0 0 30px;
+    font-size: 23px;
+    line-height: 1.6;
+    font-weight: 600;
+    color: var(--head);
+    white-space: pre-line;
+    opacity: 0;
+    transform: translateY(18px);
+}
+
+.pd-lead::first-letter {
+    float: left;
+    margin: 6px 12px 0 0;
+    font-size: 4.2em;
+    line-height: .8;
+    font-weight: 900;
+    color: var(--o);
+}
+
+.pd-story.in .pd-story-body.ready .pd-lead {
+    animation: pd-rise .8s .3s both;
+}
+
+/* bảng thông số đánh số (trong phần Mô tả) */
+.pd-specs {
+    clear: both;
+    border-top: 1px solid var(--head);
+    margin-bottom: 30px;
+}
+
+.pd-spec {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    grid-template-columns: 56px 190px minmax(0, 1fr);
+    align-items: baseline;
+    padding: 16px 12px;
+    border-bottom: 1px solid var(--line);
+    overflow: hidden;
+    opacity: 0;
+    transition: padding-left .3s;
+}
+
+.pd-spec.nokey {
+    grid-template-columns: 56px minmax(0, 1fr);
+}
+
+.pd-story.in .pd-story-body.ready .pd-spec {
+    animation: pd-rise .6s calc(var(--i) * 90ms + .5s) both;
+}
+
+/* nền cam quét từ trái khi rê chuột */
+.pd-spec::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(90deg, rgba(247, 148, 29, .14), rgba(247, 148, 29, 0));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform .4s cubic-bezier(.2, .7, .2, 1);
+}
+
+.pd-spec:hover {
+    padding-left: 22px;
+}
+
+.pd-spec:hover::before {
+    transform: scaleX(1);
+}
+
+.pd-spec em {
+    font-style: normal;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: .08em;
     color: var(--muted);
+    transition: color .25s;
+}
+
+.pd-spec:hover em {
+    color: var(--o);
+}
+
+.pd-spec b {
+    font-size: 12.5px;
+    font-weight: 800;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.pd-spec span {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--head);
+}
+
+/* các đoạn văn còn lại */
+.pd-paras p {
+    max-width: 68ch;
+    margin: 0 0 18px;
+    font-size: 16px;
+    line-height: 1.9;
+    color: var(--brown);
+    opacity: 0;
+}
+
+.pd-story.in .pd-story-body.ready .pd-paras p {
+    animation: pd-rise .7s calc(var(--i) * 120ms + .7s) both;
+}
+
+.pd-story-raw {
+    font-size: 16px;
+    line-height: 1.9;
+    white-space: pre-line;
+    color: var(--brown);
+}
+
+/* nút Xem thêm: chữ + gạch chân chạy */
+.pd-more {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 18px;
+    padding: 10px 0;
+    border: none;
+    background: none;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--head);
+    cursor: pointer;
+}
+
+.pd-more[hidden] {
+    display: none;
+}
+
+.pd-more::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 4px;
+    width: 100%;
+    height: 2px;
+    background: var(--o);
+    transform: scaleX(.3);
+    transform-origin: left;
+    transition: transform .35s;
+}
+
+.pd-more:hover {
+    color: var(--od);
+}
+
+.pd-more:hover::after {
+    transform: scaleX(1);
+}
+
+/* dấu + xoay thành − */
+.pd-more-ico {
+    position: relative;
+    width: 14px;
+    height: 14px;
+}
+
+.pd-more-ico::before,
+.pd-more-ico::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 6px;
+    width: 14px;
+    height: 2px;
+    background: currentColor;
+    transition: transform .35s;
+}
+
+.pd-more-ico::after {
+    transform: rotate(90deg);
+}
+
+.pd-more.open .pd-more-ico::after {
+    transform: rotate(0);
+}
+
+.pd-more.open .pd-more-ico::before {
+    transform: rotate(180deg);
+}
+
+.pd-story-empty {
+    margin: 0;
+    padding: 20px 0;
+    color: var(--muted);
+}
+
+@keyframes pd-rise {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* =====================================================
+   02 CHẤT LIỆU  /  03 THÔNG SỐ KỸ THUẬT
+   ===================================================== */
+
+/* 02: chữ lớn, vạch cam bên trái, không khung */
+.pd3-material {
+    margin: 0;
+    padding-left: 22px;
+    border-left: 3px solid var(--o);
+    font-size: 22px;
+    line-height: 1.6;
+    font-weight: 600;
+    color: var(--head);
+    white-space: pre-line;
+}
+
+/* 03: bảng kiểu thực đơn  TÊN ........ Giá trị */
+.pd3-specs {
+    border-top: 2px solid var(--head);
+}
+
+.pd3-specs[hidden],
+.pd3-raw[hidden] {
+    display: none;
+}
+
+.pd3-row {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    padding: 15px 0;
+    border-bottom: 1px solid var(--line);
+}
+
+.pd3-key {
+    flex-shrink: 0;
+    font-size: 12.5px;
+    font-weight: 800;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+/* đường chấm nối tên và giá trị */
+.pd3-dots {
+    flex: 1;
+    min-width: 24px;
+    border-bottom: 1px dotted rgba(110, 58, 18, .35);
+    transform: translateY(-4px);
+}
+
+.pd3-val {
+    max-width: 62%;
+    text-align: right;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--head);
+}
+
+/* dòng không có dấu ":" -> hiện nguyên dòng, đầu dòng có gạch cam */
+.pd3-row.full {
+    display: block;
+    position: relative;
+    padding-left: 18px;
+    font-size: 16px;
+    line-height: 1.5;
+    font-weight: 600;
+    color: var(--head);
+}
+
+.pd3-row.full::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: calc(15px + .75em);
+    width: 8px;
+    height: 2px;
+    background: var(--o);
+}
+
+/* Chưa có JavaScript thì vẫn hiện nguyên văn, mỗi dòng một thông số */
+.pd3-raw {
+    white-space: pre-line;
+    line-height: 1.8;
+    font-size: 15px;
+}
+
+/* =====================================================
+   XẾP SO LE: mục có class pd-story--inset thụt vào nhẹ,
+   các mục còn lại (01, 03...) sát ngoài
+   ===================================================== */
+.pd .pd-story--inset {
+    padding-left: clamp(28px, 4vw, 64px);
+}
+
+/* Mục 02, 03... không có hiệu ứng cuộn của mục 01 nên luôn cho hiện sẵn tiêu đề.
+   Sợi dây cam chỉ giữ ở mục 01 (ngăn cách với Mô tả sản phẩm),
+   mục 02, 03 bỏ hẳn dây cam và đường kẻ mảnh phía trên. */
+.pd-story:not(#pdDescSec) {
+    border-top: none;
+}
+
+.pd-story:not(#pdDescSec)::before {
+    display: none;
+}
+
+.pd-story:not(#pdDescSec) .pd-story-side {
+    position: static;
+    opacity: 1;
+    transform: none;
 }
 
 /* ===== Thông báo nhỏ (toast) ===== */
@@ -658,5 +1160,112 @@
 
     .pd-perks {
         grid-template-columns: 1fr;
+    }
+
+    /* mô tả */
+    .pd-story {
+        grid-template-columns: 1fr;
+        gap: 24px;
+        margin-top: 44px;
+        padding-top: 36px;
+    }
+
+    /* màn hình nhỏ: bỏ thụt vào, các mục xếp thẳng hàng */
+    .pd .pd-story--inset {
+        padding-left: 0;
+    }
+
+    .pd-story-side {
+        position: static;
+        display: flex;
+        align-items: baseline;
+        gap: 14px;
+    }
+
+    .pd-story-side h2 {
+        font-size: 20px;
+        margin: 0;
+    }
+
+    .pd-story-side h2 br {
+        display: none;
+    }
+
+    .pd-story-no {
+        font-size: 44px;
+    }
+
+    .pd-story-tick {
+        display: none;
+    }
+
+    .pd-lead {
+        font-size: 19px;
+    }
+
+    .pd-spec,
+    .pd-spec.nokey {
+        grid-template-columns: 40px minmax(0, 1fr);
+    }
+
+    .pd-spec b,
+    .pd-spec span {
+        grid-column: 2;
+    }
+}
+
+@media (max-width: 600px) {
+    .pd3-material {
+        font-size: 18px;
+    }
+
+    /* tên và giá trị xuống 2 dòng, bỏ đường chấm */
+    .pd3-row {
+        flex-wrap: wrap;
+        gap: 4px 12px;
+    }
+
+    .pd3-dots {
+        display: none;
+    }
+
+    .pd3-val {
+        flex-basis: 100%;
+        max-width: 100%;
+        text-align: left;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    /* chỉ mục 01 có dây cam nên chỉ cần ép hiện đầy đủ ở mục 01 */
+    #pdDescSec::before {
+        transition: none;
+        width: 100%;
+    }
+
+    .pd-story-side {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+
+    .pd-lead,
+    .pd-spec,
+    .pd-paras p {
+        opacity: 1;
+        transform: none;
+        animation: none !important;
+    }
+
+    /* số 01, 02, 03: đứng yên, không lấp lánh */
+    .pd-story-no {
+        animation: none;
+        background: none;
+        -webkit-text-fill-color: currentColor;
+    }
+
+    .pd-story-no::before,
+    .pd-story-no::after {
+        display: none;
     }
 }

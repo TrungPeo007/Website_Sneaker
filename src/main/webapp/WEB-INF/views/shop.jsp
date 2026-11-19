@@ -10,7 +10,7 @@
 <%-- CSS của trang danh sách sản phẩm --%>
 <link rel="stylesheet" href="${ctx}/static/assets/css/shop.css">
 
-<section class="sec">
+<section class="sec shop-sec">
     <div class="sec-head">
         <div>
             <div class="eyebrow">Cửa hàng</div>
@@ -35,8 +35,10 @@
                         </svg>
                     </button>
                     <div class="fl-body" id="flBody">
-                        <div class="fl-list" id="flList" role="group" aria-label="Lọc theo size"></div>
-                        <button type="button" class="fl-clear" id="flClear" hidden>Bỏ chọn size</button>
+                        <div class="fl-inner">
+                            <div class="fl-list" id="flList" role="group" aria-label="Lọc theo size"></div>
+                            <button type="button" class="fl-clear" id="flClear" hidden>Bỏ chọn size</button>
+                        </div>
                     </div>
                 </div>
             </aside>
@@ -47,10 +49,12 @@
             <%-- ===== Thanh sắp xếp + lọc giá ===== --%>
             <c:if test="${not empty products}">
                 <div class="sb" id="shopBar">
+
                     <div class="sb-row sb-top">
                         <div class="sb-count" id="sbCount"><b>${fn:length(products)}</b> sản phẩm</div>
-                        <label class="sb-sort">
-                            Sắp xếp
+                        <div class="sb-sort">
+                            <span>Sắp xếp</span>
+                            <%-- select gốc vẫn giữ để lưu giá trị; JS dựng dropdown tuỳ biến ngay cạnh --%>
                             <select id="sbSort" aria-label="Sắp xếp sản phẩm">
                                 <option value="default">Mặc định</option>
                                 <option value="newest">Mới nhất</option>
@@ -60,7 +64,7 @@
                                 <option value="rating">Đánh giá cao nhất</option>
                                 <option value="discount">Giảm giá nhiều nhất</option>
                             </select>
-                        </label>
+                        </div>
                     </div>
 
                     <div class="sb-row">
@@ -71,16 +75,39 @@
                             <button type="button" class="sb-chip" data-min="3000000" data-max="4000000">3 – 4 triệu</button>
                             <button type="button" class="sb-chip" data-min="4000000" data-max="">Trên 4 triệu</button>
                         </div>
+                    </div>
+
+                    <div class="sb-row sb-tune">
+                        <div class="sb-slidebox">
+                            <div class="sb-slider" id="sbSlider">
+                                <span class="sb-track"></span>
+                                <span class="sb-fill"></span>
+                                <input type="range" id="sbLo" min="0" max="5000000" step="50000" value="0" aria-label="Kéo chọn giá thấp nhất">
+                                <input type="range" id="sbHi" min="0" max="5000000" step="50000" value="5000000" aria-label="Kéo chọn giá cao nhất">
+                            </div>
+                            <div class="sb-readout" id="sbReadout"></div>
+                        </div>
+
                         <div class="sb-range">
                             <input type="number" id="sbMin" min="0" step="50000" inputmode="numeric" placeholder="Từ (₫)" aria-label="Giá thấp nhất">
-                            –
+                            <i></i>
                             <input type="number" id="sbMax" min="0" step="50000" inputmode="numeric" placeholder="Đến (₫)" aria-label="Giá cao nhất">
                         </div>
+
                         <label class="sb-check">
-                            <input type="checkbox" id="sbSale"> Chỉ sản phẩm đang giảm giá
+                            <input type="checkbox" id="sbSale">
+                            <span class="sb-sw"></span>
+                            Chỉ đang giảm giá
                         </label>
+
                         <button type="button" class="sb-reset" id="sbReset" hidden>Xóa lọc</button>
                     </div>
+
+                    <%-- Các bộ lọc đang áp dụng (bấm để gỡ từng cái) --%>
+                    <div class="sb-row sb-tags" id="sbTags" hidden></div>
+
+                    <%-- Thanh tiến độ: tỉ lệ sản phẩm còn hiển thị --%>
+                    <div class="sb-line" aria-hidden="true"><i id="sbLine"></i></div>
                 </div>
             </c:if>
 

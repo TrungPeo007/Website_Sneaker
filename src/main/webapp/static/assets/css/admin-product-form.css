@@ -1,14 +1,96 @@
 /* ===== CSS riêng của trang thêm / sửa sản phẩm (product-form.jsp) ===== */
+
+:root {
+    --ease: cubic-bezier(.22, .8, .3, 1);
+}
+
+/* ---------- Hiệu ứng dùng chung ---------- */
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes barGrow {
+    from { width: 0; }
+    to   { width: 44px; }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%      { transform: translateX(-6px); }
+    40%      { transform: translateX(6px); }
+    60%      { transform: translateX(-4px); }
+    80%      { transform: translateX(4px); }
+}
+
+@keyframes popIn {
+    from { opacity: 0; transform: scale(.85); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-12px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes imgIn {
+    from { opacity: 0; transform: scale(1.04); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes hintIn {
+    from { opacity: 0; transform: translateY(-3px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
 .content-in {
     max-width: 860px;
 }
 
-.page-sub {
-    margin: 4px 0 24px;
+/* Tiêu đề + thanh cam chạy ra */
+.page-title {
+    position: relative;
+    padding-bottom: 10px;
+    animation: fadeDown .5s var(--ease) both;
 }
 
+.page-title::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 4px;
+    width: 44px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--orange), #FFC46B);
+    animation: barGrow .7s .25s var(--ease) both;
+}
+
+.page-sub {
+    margin: 4px 0 24px;
+    animation: fadeDown .5s .05s var(--ease) both;
+}
+
+/* Thông báo lỗi: trượt xuống rồi rung nhẹ để gây chú ý */
+.alert {
+    animation: fadeDown .45s var(--ease) both, shake .5s .45s ease-in-out;
+}
+
+/* ---------- Khung form ---------- */
 .card {
     padding: 28px;
+    animation: fadeUp .55s .1s var(--ease) both;
+    transition: box-shadow .3s var(--ease);
+}
+
+.card:hover,
+.card:focus-within {
+    box-shadow: 0 18px 40px rgba(122, 78, 24, .08);
 }
 
 .grid {
@@ -21,18 +103,45 @@
     grid-column: 1 / -1;
 }
 
+/* Các ô hiện lần lượt từ trên xuống */
+.grid > div {
+    animation: fadeUp .5s var(--ease) both;
+}
+
+.grid > div:nth-child(1) { animation-delay: .18s; }
+.grid > div:nth-child(2) { animation-delay: .23s; }
+.grid > div:nth-child(3) { animation-delay: .28s; }
+.grid > div:nth-child(4) { animation-delay: .33s; }
+.grid > div:nth-child(5) { animation-delay: .38s; }
+.grid > div:nth-child(6) { animation-delay: .43s; }
+.grid > div:nth-child(7) { animation-delay: .48s; }
+.grid > div:nth-child(8) { animation-delay: .53s; }
+.grid > div:nth-child(n+9) { animation-delay: .58s; }
+
+.sizes-head   { animation: fadeUp .5s .62s var(--ease) both; }
+#sizeRows     { animation: fadeUp .5s .66s var(--ease) both; }
+.form-actions { animation: fadeUp .5s .72s var(--ease) both; }
+
 label.f {
     display: block;
     font-size: 12.5px;
     font-weight: 700;
     color: var(--brown);
     margin-bottom: 6px;
+    transition: color .2s, transform .25s var(--ease);
+}
+
+/* Ô đang gõ thì nhãn đổi màu cam */
+.grid > div:focus-within > label.f {
+    color: var(--orange-dark);
+    transform: translateX(2px);
 }
 
 .req {
     color: var(--danger);
 }
 
+/* ---------- Ô nhập ---------- */
 input[type=text],
 input[type=number],
 select,
@@ -46,7 +155,14 @@ textarea {
     font-size: 14px;
     color: var(--text);
     outline: none;
-    transition: border-color .15s, background .15s;
+    transition: border-color .2s, background .2s, box-shadow .25s var(--ease);
+}
+
+input[type=text]:hover,
+input[type=number]:hover,
+select:hover,
+textarea:hover {
+    border-color: #F3C98B;
 }
 
 textarea {
@@ -54,11 +170,32 @@ textarea {
     resize: vertical;
 }
 
+/* Mũi tên riêng cho ô chọn danh mục */
+select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 42px;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23F7941D' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 16px;
+}
+
 input:focus,
 select:focus,
 textarea:focus {
     border-color: var(--orange);
-    background: #fff;
+    background-color: #fff;
+    box-shadow: 0 0 0 4px rgba(247, 148, 29, .15);
+}
+
+/* Nhập sai (bỏ trống ô bắt buộc...) thì viền đỏ nhẹ */
+input:user-invalid,
+select:user-invalid,
+textarea:user-invalid {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 4px rgba(214, 69, 20, .1);
 }
 
 .hint {
@@ -70,29 +207,72 @@ textarea:focus {
 .hint.err {
     color: var(--danger);
     font-weight: 700;
+    animation: hintIn .3s var(--ease);
 }
 
 .hint.ok {
     color: var(--ok);
     font-weight: 700;
+    animation: hintIn .3s var(--ease);
 }
 
+/* ---------- Công tắc "Đang bán" ---------- */
 .check {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     font-size: 14px;
     font-weight: 700;
     color: var(--head);
+    cursor: pointer;
+    user-select: none;
 }
 
 .check input {
-    width: 18px;
-    height: 18px;
-    accent-color: var(--orange);
+    appearance: none;
+    -webkit-appearance: none;
+    position: relative;
+    flex-shrink: 0;
+    width: 46px;
+    height: 26px;
+    margin: 0;
+    border-radius: 999px;
+    background: #E6D7BB;
+    cursor: pointer;
+    transition: background .25s var(--ease), box-shadow .25s var(--ease);
 }
 
-/* Size */
+.check input::before {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, .25);
+    transition: transform .3s var(--ease);
+}
+
+.check input:checked {
+    background: var(--orange);
+}
+
+.check input:checked::before {
+    transform: translateX(20px);
+}
+
+.check input:hover {
+    box-shadow: 0 0 0 4px rgba(247, 148, 29, .15);
+}
+
+.check input:focus-visible {
+    outline: 3px solid rgba(247, 148, 29, .45);
+    outline-offset: 2px;
+}
+
+/* ---------- Size & tồn kho ---------- */
 .sizes-head {
     display: flex;
     align-items: center;
@@ -107,12 +287,14 @@ textarea:focus {
     color: var(--head);
 }
 
+/* Dòng size mới thêm sẽ trượt vào */
 .size-row {
     display: grid;
     grid-template-columns: 1fr 1fr 40px;
     gap: 10px;
     margin-bottom: 10px;
     align-items: center;
+    animation: slideIn .35s var(--ease) both;
 }
 
 .btn-sm {
@@ -127,12 +309,19 @@ textarea:focus {
     cursor: pointer;
     display: inline-flex;
     align-items: center;
-    transition: background .15s, border-color .15s;
+    transition: background .2s, border-color .2s, transform .2s var(--ease), box-shadow .2s var(--ease);
 }
 
-.btn-sm:hover {
+.btn-sm:hover:not(:disabled) {
     background: var(--cream);
     border-color: var(--orange);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(247, 148, 29, .18);
+}
+
+.btn-sm:active:not(:disabled) {
+    transform: translateY(0) scale(.96);
+    box-shadow: none;
 }
 
 .btn-sm:disabled {
@@ -149,15 +338,17 @@ textarea:focus {
     color: #B7894F;
     font-size: 18px;
     cursor: pointer;
+    transition: background .2s, color .2s, border-color .2s, transform .25s var(--ease);
 }
 
 .btn-x:hover {
     background: #FFEDE5;
     color: var(--danger);
     border-color: #F2B79B;
+    transform: rotate(90deg);
 }
 
-/* Tải ảnh lên */
+/* ---------- Tải ảnh đại diện ---------- */
 .upload-row {
     display: flex;
     align-items: center;
@@ -166,6 +357,8 @@ textarea:focus {
 }
 
 .btn-browse {
+    position: relative;
+    overflow: hidden;
     height: 40px;
     padding: 0 20px;
     border-radius: 999px;
@@ -179,11 +372,33 @@ textarea:focus {
     align-items: center;
     gap: 8px;
     box-shadow: 0 8px 18px rgba(247, 148, 29, .25);
-    transition: background .15s;
+    transition: background .2s, transform .25s var(--ease), box-shadow .25s var(--ease);
 }
 
-.btn-browse:hover {
+.btn-browse::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -80%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(100deg, transparent, rgba(255, 255, 255, .45), transparent);
+    transform: skewX(-20deg);
+    transition: left .6s var(--ease);
+}
+
+.btn-browse:hover:not(:disabled) {
     background: var(--orange-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(247, 148, 29, .35);
+}
+
+.btn-browse:hover:not(:disabled)::after {
+    left: 130%;
+}
+
+.btn-browse:active:not(:disabled) {
+    transform: translateY(0) scale(.97);
 }
 
 .btn-browse:disabled {
@@ -213,6 +428,13 @@ textarea:focus {
     overflow: hidden;
     color: var(--muted);
     font-size: 12px;
+    transition: border-color .25s, background .25s, box-shadow .25s var(--ease);
+}
+
+.preview:hover {
+    border-color: var(--orange);
+    background: #FFF7DD;
+    box-shadow: 0 8px 20px rgba(247, 148, 29, .12);
 }
 
 .preview img {
@@ -220,8 +442,10 @@ textarea:focus {
     height: 100%;
     object-fit: contain;
     display: none;
+    animation: imgIn .4s var(--ease) both;
 }
 
+/* ---------- Nút lưu / hủy ---------- */
 .form-actions {
     display: flex;
     justify-content: flex-end;
@@ -230,21 +454,47 @@ textarea:focus {
 }
 
 .btn-save {
+    position: relative;
+    overflow: hidden;
     height: 44px;
     padding: 0 28px;
     border: none;
     border-radius: 999px;
     background: var(--orange);
     color: #fff;
+    font-family: inherit;
     font-weight: 800;
     font-size: 14px;
     cursor: pointer;
     box-shadow: 0 10px 22px rgba(247, 148, 29, .3);
-    transition: background .15s;
+    transition: background .2s, transform .25s var(--ease), box-shadow .25s var(--ease);
+}
+
+.btn-save::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -80%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(100deg, transparent, rgba(255, 255, 255, .45), transparent);
+    transform: skewX(-20deg);
+    transition: left .6s var(--ease);
 }
 
 .btn-save:hover {
     background: var(--orange-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 14px 28px rgba(247, 148, 29, .38);
+}
+
+.btn-save:hover::after {
+    left: 130%;
+}
+
+.btn-save:active {
+    transform: translateY(0) scale(.97);
+    box-shadow: 0 6px 14px rgba(247, 148, 29, .3);
 }
 
 .btn-cancel {
@@ -258,10 +508,27 @@ textarea:focus {
     font-size: 14px;
     display: inline-flex;
     align-items: center;
+    transition: background .2s, border-color .2s, transform .25s var(--ease);
 }
 
 .btn-cancel:hover {
     background: var(--cream);
+    border-color: var(--orange);
+    transform: translateY(-2px);
+}
+
+.btn-cancel:active {
+    transform: translateY(0) scale(.97);
+}
+
+.btn-save:focus-visible,
+.btn-cancel:focus-visible,
+.btn-sm:focus-visible,
+.btn-browse:focus-visible,
+.btn-x:focus-visible,
+.gal-add:focus-visible {
+    outline: 3px solid rgba(247, 148, 29, .45);
+    outline-offset: 2px;
 }
 
 @media (max-width: 900px) {
@@ -278,6 +545,7 @@ textarea:focus {
     margin-top: 6px;
 }
 
+/* Ảnh vừa thêm sẽ bật ra */
 .gal-item {
     position: relative;
     aspect-ratio: 1 / 1;
@@ -289,6 +557,14 @@ textarea:focus {
     display: flex;
     align-items: center;
     justify-content: center;
+    animation: popIn .35s var(--ease) both;
+    transition: border-color .2s, transform .3s var(--ease), box-shadow .3s var(--ease);
+}
+
+.gal-item:hover {
+    border-color: var(--orange);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 22px rgba(247, 148, 29, .22);
 }
 
 .gal-item img {
@@ -296,6 +572,11 @@ textarea:focus {
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
+    transition: transform .35s var(--ease);
+}
+
+.gal-item:hover img {
+    transform: scale(1.07);
 }
 
 .gal-item.broken::after {
@@ -328,6 +609,7 @@ textarea:focus {
     z-index: 2;
 }
 
+/* Thanh công cụ trượt lên khi rê chuột */
 .gal-tools {
     position: absolute;
     left: 0;
@@ -340,17 +622,20 @@ textarea:focus {
     padding: 14px 4px 5px;
     background: linear-gradient(transparent, rgba(59, 36, 18, .6));
     opacity: 0;
-    transition: opacity .15s;
+    transform: translateY(8px);
+    transition: opacity .2s, transform .25s var(--ease);
 }
 
 .gal-item:hover .gal-tools,
 .gal-item:focus-within .gal-tools {
     opacity: 1;
+    transform: translateY(0);
 }
 
 @media (hover: none) {
     .gal-tools {
         opacity: 1;
+        transform: none;
     }
 }
 
@@ -369,10 +654,12 @@ textarea:focus {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    transition: background .15s, color .15s, transform .2s var(--ease);
 }
 
 .gal-btn:hover:not(:disabled) {
     background: var(--cream);
+    transform: scale(1.12);
 }
 
 .gal-btn:disabled {
@@ -382,6 +669,11 @@ textarea:focus {
 
 .gal-btn.del {
     color: var(--danger);
+}
+
+.gal-btn.del:hover:not(:disabled) {
+    background: var(--danger);
+    color: #fff;
 }
 
 .gal-add {
@@ -399,14 +691,35 @@ textarea:focus {
     align-items: center;
     justify-content: center;
     gap: 6px;
-    transition: background .15s;
+    transition: background .2s, transform .3s var(--ease), box-shadow .3s var(--ease);
+}
+
+.gal-add svg {
+    color: var(--orange);
+    transition: transform .35s var(--ease);
 }
 
 .gal-add:hover:not(:disabled) {
     background: #fff;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 22px rgba(247, 148, 29, .2);
+}
+
+.gal-add:hover:not(:disabled) svg {
+    transform: rotate(90deg) scale(1.15);
 }
 
 .gal-add:disabled {
     opacity: .6;
     cursor: wait;
+}
+
+/* ---------- Người dùng tắt hiệu ứng chuyển động trong hệ điều hành ---------- */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation: none !important;
+        transition: none !important;
+    }
 }

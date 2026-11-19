@@ -15,6 +15,8 @@
                 <a href="${ctx}/admin/categories" class="${adminMenu == 'categories' ? 'active' : ''}">Danh Mục</a>
                 <a href="${ctx}/admin/blogs" class="${adminMenu == 'blogs' ? 'active' : ''}">Bài Viết</a>
                 <a href="${ctx}/admin/orders" class="${adminMenu == 'orders' ? 'active' : ''}">Đơn Hàng</a>
+                <a href="${ctx}/admin/coupons" class="${adminMenu == 'coupons' ? 'active' : ''}">Coupon</a>
+                <a href="${ctx}/admin/vouchers" class="${adminMenu == 'vouchers' ? 'active' : ''}">Voucher</a>
                 <a href="${ctx}/admin/lookbooks" class="${adminMenu == 'lookbooks' ? 'active' : ''}">Bộ Sưu Tập</a>
                 <a href="${ctx}/admin/pages" class="${adminMenu == 'pages' ? 'active' : ''}">Trang Nội Dung</a>
             </nav>

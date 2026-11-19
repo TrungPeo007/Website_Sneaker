@@ -159,6 +159,7 @@ img {
     font-size: 16px;
     letter-spacing: .2px;
     color: var(--brown);
+    white-space: nowrap;
     transition: color .2s;
 }
 
@@ -296,7 +297,7 @@ img {
     background: #F8EEDA;
 }
 
-/* ===== Bên phải: icon tài khoản, giỏ hàng, tìm kiếm ===== */
+/* ===== Bên phải: icon tìm kiếm, tài khoản, giỏ hàng ===== */
 .header-actions {
     display: flex;
     align-items: center;
@@ -357,52 +358,507 @@ img {
     display: none;
 }
 
-/* Ô tìm kiếm: thu gọn thành icon, bấm vào thì mở rộng sang trái */
-.hs {
+/* ===== Thanh tìm kiếm trượt xuống dưới header =====
+   Kiểu "đường chỉ khâu giày": khung bo góc nhẹ, viền nét đứt như mũi khâu,
+   khi gõ thì sợi chỉ cam chạy từ giữa lan ra, nút tìm kiếm hình thang nghiêng như đế giày,
+   gợi ý là các thẻ giá (tag) có lỗ xỏ dây. */
+.sp {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    z-index: 25;
+    padding: 22px 0 20px;
+    background:
+        radial-gradient(500px 120px at 50% 0%, rgba(247, 148, 29, .07), transparent 70%),
+        #fff;
+    border-bottom: 1px solid var(--cream-border);
+    box-shadow: 0 18px 36px rgba(110, 58, 18, .12);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: opacity .25s ease, transform .25s ease, visibility .25s;
+}
+
+.sp.open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.sp-inner {
+    max-width: 860px;
+}
+
+/* Khi mở: khung và gợi ý trượt lên lần lượt */
+.sp-form,
+.sp-sugg {
+    opacity: 0;
+    transform: translateY(12px);
+}
+
+.sp-form {
+    position: relative;
     display: flex;
     align-items: center;
+    gap: 12px;
+    height: 64px;
     margin: 0;
-    border-radius: 4px;              /* khung gần vuông; muốn vuông hẳn thì đổi thành 0 */
-    border: 1.5px solid transparent;
-    transition: background .3s, border-color .3s;
+    padding: 0 12px 0 26px;
+    border: 1.5px solid var(--cream-border);
+    border-radius: 16px;
+    background: linear-gradient(135deg, #FFF9EA 0%, #FFF1CF 100%);
+    box-shadow: 0 10px 24px rgba(200, 140, 40, .10);
+    transition:
+        opacity .4s ease,
+        transform .4s cubic-bezier(.22, .8, .3, 1),
+        border-color .2s,
+        box-shadow .25s,
+        background .25s;
+    transition-delay: .08s, .08s, 0s, 0s, 0s;
 }
 
-.hs .hs-btn {
-    border-radius: 4px;
+.sp.open .sp-form,
+.sp.open .sp-sugg {
+    opacity: 1;
+    transform: none;
 }
 
-.hs input {
-    width: 0;
-    padding: 0;
-    opacity: 0;
+/* Đường khâu nét đứt chạy viền trong của khung */
+.sp-form {
+    /* Viền mũi khâu chạy: SVG nét đứt có animation, đổi màu/tốc độ khi focus (đổi stroke ở đây nếu muốn màu khác) */
+    --sp-stitch: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25'%3E%3Cstyle%3E@keyframes m%7Bto%7Bstroke-dashoffset:-12%7D%7Drect%7Banimation:m 1.4s linear infinite%7D@media (prefers-reduced-motion:reduce)%7Brect%7Banimation:none%7D%7D%3C/style%3E%3Crect width='100%25' height='100%25' rx='11' ry='11' fill='none' stroke='%23F1D08A' stroke-width='3' stroke-dasharray='7 5'/%3E%3C/svg%3E");
+}
+
+.sp-form:focus-within {
+    --sp-stitch: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25'%3E%3Cstyle%3E@keyframes m%7Bto%7Bstroke-dashoffset:-12%7D%7Drect%7Banimation:m .6s linear infinite%7D@media (prefers-reduced-motion:reduce)%7Brect%7Banimation:none%7D%7D%3C/style%3E%3Crect width='100%25' height='100%25' rx='11' ry='11' fill='none' stroke='%23F7941D' stroke-width='3' stroke-dasharray='7 5'/%3E%3C/svg%3E");
+}
+
+.sp-form::before {
+    content: "";
+    position: absolute;
+    inset: 5px;
+    background: var(--sp-stitch) no-repeat center / 100% 100%;
+    pointer-events: none;
+}
+
+/* Sợi chỉ cam ở đáy khung: lúc gõ thì chảy từ giữa lan ra hai bên */
+.sp-form::after {
+    content: "";
+    position: absolute;
+    left: 18px;
+    right: 18px;
+    bottom: -2px;
+    height: 3px;
+    border-radius: 3px;
+    background: linear-gradient(90deg,
+        var(--orange) 0%, #FFD27F 25%, var(--orange) 50%, #FFD27F 75%, var(--orange) 100%);
+    background-size: 200% 100%;
+    transform: scaleX(0);
+    transform-origin: 50% 50%;
+    pointer-events: none;
+    transition: transform .5s cubic-bezier(.22, .8, .3, 1);
+    animation: thread-flow 2.5s linear infinite;
+}
+
+.sp-form:focus-within {
+    background: #fff;
+    border-color: var(--orange);
+    box-shadow: 0 0 0 4px rgba(247, 148, 29, .12), 0 14px 30px rgba(247, 148, 29, .18);
+}
+
+.sp-form:focus-within::after {
+    transform: scaleX(1);
+}
+
+.sp-ico {
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+    color: var(--orange);
+    transition: transform .35s cubic-bezier(.22, .8, .3, 1);
+}
+
+.sp-form:focus-within .sp-ico {
+    transform: rotate(-12deg) scale(1.12);
+}
+
+.sp-form input {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    min-width: 0;
+    height: 100%;
     border: none;
     outline: none;
     background: transparent;
     font-family: inherit;
-    font-size: 14.5px;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: .2px;
     color: var(--text);
-    pointer-events: none;
-    transition: width .38s cubic-bezier(.22, .8, .3, 1), padding .38s cubic-bezier(.22, .8, .3, 1), opacity .25s;
+    caret-color: var(--orange);
 }
 
-.hs input::placeholder {
+.sp-form input::placeholder {
     color: #BFA784;
+    font-weight: 400;
 }
 
-.hs.open {
-    background: var(--cream);
-    border-color: var(--cream-border);
+/* Nút tìm kiếm: hình thang nghiêng như đế giày, có vệt sáng quét qua khi rê chuột */
+.sp-submit {
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    height: 44px;
+    padding: 0 36px;
+    border: none;
+    background: linear-gradient(135deg, #FBA83A, var(--orange-dark));
+    color: #fff;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: .3px;
+    cursor: pointer;
+    clip-path: polygon(14px 0, 100% 0, calc(100% - 14px) 100%, 0 100%);
+    transition: filter .15s;
 }
 
-.hs.open input {
-    width: 260px;
-    padding: 0 4px 0 20px;
+.sp-submit::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -60%;
+    width: 40%;
+    background: linear-gradient(100deg, transparent, rgba(255, 255, 255, .5), transparent);
+    transform: skewX(-20deg);
+    transition: left .6s ease;
+}
+
+.sp-submit:hover {
+    filter: brightness(1.06);
+}
+
+.sp-submit:hover::after {
+    left: 120%;
+}
+
+.sp-submit:active {
+    filter: brightness(.94);
+}
+
+.sp-close {
+    position: relative;
+    z-index: 1;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--brown);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: background .15s, color .15s;
+}
+
+.sp-close svg {
+    transition: transform .3s ease;
+}
+
+.sp-close:hover {
+    background: #FFEFC8;
+    color: var(--orange-dark);
+}
+
+.sp-close:hover svg {
+    transform: rotate(90deg);
+}
+
+.sp-sugg {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-top: 18px;
+    padding: 0 6px;
+    transition: opacity .4s ease, transform .4s cubic-bezier(.22, .8, .3, 1);
+    transition-delay: .18s;
+}
+
+.sp-sugg span {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--muted);
+}
+
+/* Gợi ý dạng thẻ giá treo giày: đầu nhọn bên trái + lỗ xỏ dây */
+.sp-sugg a {
+    position: relative;
+    padding: 8px 16px 8px 30px;
+    background: #FFEFC4;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #8A4B08;
+    clip-path: polygon(12px 0, 100% 0, 100% 100%, 12px 100%, 0 50%);
+    transition: background .15s, color .15s, transform .2s;
+}
+
+.sp-sugg a::before {
+    content: "";
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    width: 6px;
+    height: 6px;
+    margin-top: -3px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: inset 0 0 0 1.5px #E8B25A;
+}
+
+.sp-sugg a:hover {
+    background: #FFE2A0;
+    color: var(--orange-dark);
+    transform: translateX(3px);
+}
+
+@media (max-width: 600px) {
+    .sp-submit {
+        display: none;
+    }
+}
+
+/* ===== Tài khoản khách hàng trên header: avatar + "Xin chào, tên" + menu Đăng xuất ===== */
+.acc-dd {
+    position: relative;
+}
+
+/* Nút tài khoản: khung bo góc nền trắng (không còn viên thuốc kem), avatar vuông bo kiểu "squircle",
+   hover/mở thì sợi chỉ cam hiện ở đáy giống gạch chân menu */
+.acc-toggle {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 54px;
+    padding: 0 10px 0 7px;
+    border: 1.5px solid #F3E6CC;
+    border-radius: 16px;
+    background: linear-gradient(180deg, #FFFFFF 0%, #FFFAF0 100%);
+    color: var(--brown);
+    font-family: inherit;
+    cursor: pointer;
+    transition: border-color .2s, box-shadow .25s, background .25s;
+}
+
+/* sợi chỉ cam ở đáy: lan từ giữa ra khi hover / mở menu */
+.acc-toggle::after {
+    content: "";
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    bottom: -2px;
+    height: 3px;
+    border-radius: 3px;
+    background: linear-gradient(90deg,
+        var(--orange) 0%, #FFD27F 25%, var(--orange) 50%, #FFD27F 75%, var(--orange) 100%);
+    background-size: 200% 100%;
+    transform: scaleX(0);
+    transform-origin: 50% 50%;
+    transition: transform .45s cubic-bezier(.22, .8, .3, 1);
+    animation: thread-flow 2.5s linear infinite;
+    pointer-events: none;
+}
+
+.acc-toggle:hover,
+.acc-dd.open .acc-toggle {
+    border-color: #F3C77A;
+    background: #fff;
+    box-shadow: 0 10px 22px rgba(247, 148, 29, .16);
+}
+
+.acc-toggle:hover::after,
+.acc-dd.open .acc-toggle::after {
+    transform: scaleX(1);
+}
+
+.acc-avatar {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, #FBA83A, var(--orange-dark));
+    color: #fff;
+    font-weight: 800;
+    font-size: 17px;
+    /* vòng trắng + vòng cam mờ bao quanh avatar */
+    box-shadow: 0 0 0 2px #fff, 0 0 0 3.5px rgba(247, 148, 29, .35);
+    transition: box-shadow .3s ease;
+}
+
+.acc-toggle:hover .acc-avatar,
+.acc-dd.open .acc-toggle .acc-avatar {
+    box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--orange);
+}
+
+/* chấm xanh "đang đăng nhập" ở góc avatar (chỉ trên nút header) */
+.acc-toggle .acc-avatar::after {
+    content: "";
+    position: absolute;
+    right: -4px;
+    bottom: -4px;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: #34C759;
+    border: 2px solid #fff;
+}
+
+.acc-avatar.lg {
+    width: 46px;
+    height: 46px;
+    border-radius: 15px;
+    font-size: 20px;
+}
+
+.acc-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1.2;
+    text-align: left;
+}
+
+.acc-text small {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .9px;
+    text-transform: uppercase;
+    color: var(--soft);
+}
+
+.acc-text b {
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--head);
+}
+
+.acc-chev {
+    box-sizing: border-box;
+    width: 24px;
+    height: 24px;
+    padding: 5px;
+    border-radius: 50%;
+    background: #FFF1D6;
+    color: var(--amber);
+    transition: transform .25s, background .2s;
+}
+
+.acc-toggle:hover .acc-chev,
+.acc-dd.open .acc-chev {
+    background: #FFE2A8;
+}
+
+.acc-dd.open .acc-chev {
+    transform: rotate(180deg);
+}
+
+.acc-menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    z-index: 40;
+    min-width: 260px;
+    padding: 8px;
+    border-radius: 16px;
+    background: #fff;
+    border: 1px solid var(--cream-border);
+    box-shadow: 0 16px 36px rgba(110, 58, 18, .16);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition: opacity .2s, transform .2s, visibility .2s;
+}
+
+/* mũi nhọn nhỏ chỉ lên nút tài khoản */
+.acc-menu::before {
+    content: "";
+    position: absolute;
+    top: -6px;
+    right: 26px;
+    width: 10px;
+    height: 10px;
+    background: #fff;
+    border-top: 1px solid var(--cream-border);
+    border-left: 1px solid var(--cream-border);
+    transform: rotate(45deg);
+}
+
+.acc-dd.open .acc-menu {
     opacity: 1;
-    pointer-events: auto;
+    visibility: visible;
+    transform: translateY(0);
 }
 
-.hs.open .hs-btn {
-    color: var(--orange);
+.acc-menu-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 10px 14px;
+    margin-bottom: 6px;
+    border-bottom: 1.5px dashed #F1D9A6;
+}
+
+.acc-menu-head small {
+    display: block;
+    font-size: 11px;
+    color: var(--muted);
+}
+
+.acc-menu-head b {
+    display: block;
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--head);
+}
+
+.acc-out {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 12px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--brown);
+    transition: background .15s, color .15s;
+}
+
+.acc-out svg {
+    transition: transform .25s ease;
+}
+
+.acc-out:hover {
+    background: #FFF3DE;
+    color: var(--orange-dark);
+}
+
+.acc-out:hover svg {
+    transform: translateX(3px);
 }
 
 /* ===== Đường chỉ nằm ở đáy header, bấm menu thì chảy từ giữa lan ra ===== */
@@ -772,8 +1228,14 @@ body.cart-open {
         display: none;
     }
 
-    .hs.open input {
-        width: min(220px, 48vw);
+    /* Màn hình nhỏ: tài khoản chỉ hiện avatar */
+    .acc-text,
+    .acc-chev {
+        display: none;
+    }
+
+    .acc-toggle {
+        padding: 0 6px;
     }
 }
 
@@ -789,12 +1251,33 @@ body.cart-open {
 
 /* ===== Người dùng tắt hiệu ứng chuyển động ===== */
 @media (prefers-reduced-motion: reduce) {
-    .hs input,
+    .sp,
+    .sp-form,
+    .sp-sugg,
+    .sp-sugg a,
+    .sp-ico,
+    .sp-close svg,
+    .sp-form::after,
+    .sp-submit::after,
     .nav a::after,
     .nav .nav-dd-toggle .chev,
     .nav-dd-menu,
+    .acc-menu,
+    .acc-chev,
     .cart-drawer,
     .cart-overlay {
+        transition: none;
+    }
+
+    .sp-form::after,
+    .acc-toggle::after {
+        animation: none;
+    }
+
+    .acc-toggle,
+    .acc-toggle::after,
+    .acc-avatar,
+    .acc-out svg {
         transition: none;
     }
 
@@ -1117,111 +1600,231 @@ main.container {
     background: var(--orange);
 }
 
-/* ===== 2. Flash Drop ===== */
+/* ===== 2. Thanh ngày giờ (phía trên danh sách sản phẩm) =====
+   Trái: tờ lịch nhỏ + thứ, ngày. Phải: đồng hồ thời gian thực kiểu lật số. */
 .flash-bar {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 20px;
-    background: #fff;
-    border: 1px solid #FBF0D6;
-    border-radius: 22px;
-    padding: 18px 24px;
-    box-shadow: 0 8px 28px rgba(200, 140, 40, .08);
-}
-
-.flash-left {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-}
-
-.flash-ico {
-    width: 44px;
-    height: 44px;
-    border-radius: 14px;
-    background: #FFF1CC;
+    gap: 28px;
+    padding: 22px 36px 22px 40px;
+    border-radius: 26px;
     border: 1px solid #F8E3BC;
-    color: var(--orange);
+    background:
+        radial-gradient(380px 170px at 100% 0%, rgba(247, 148, 29, .16), transparent 70%),
+        linear-gradient(120deg, #FFFFFF 0%, #FFF9EA 55%, #FFF0CF 100%);
+    box-shadow: 0 14px 36px rgba(200, 140, 40, .12);
+    overflow: hidden;
+}
+
+/* vạch cam mảnh ở mép trái */
+.flash-bar::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 20px;
+    bottom: 20px;
+    width: 4px;
+    border-radius: 0 4px 4px 0;
+    background: linear-gradient(180deg, var(--orange), #FFD27F);
+}
+
+/* --- Bên trái: lịch + thứ ngày --- */
+.fb-date {
     display: flex;
     align-items: center;
-    justify-content: center;
+    gap: 20px;
+    min-width: 0;
+}
+
+.fb-cal {
     flex-shrink: 0;
+    width: 68px;
+    border-radius: 16px;
+    background: #fff;
+    border: 1px solid #F1DDB0;
+    box-shadow: 0 10px 22px rgba(200, 140, 40, .2);
+    overflow: hidden;
+    text-align: center;
 }
 
-.flash-title {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-    font-size: 17px;
+.fb-cal-m {
+    display: block;
+    padding: 6px 0 5px;
+    background: linear-gradient(135deg, var(--orange), var(--orange-dark));
+    color: #fff;
+    font-size: 10px;
     font-weight: 800;
-    color: var(--head);
-}
-
-.flash-title .pill {
-    font-size: 9.5px;
-    font-weight: 800;
-    letter-spacing: .5px;
-    padding: 4px 9px;
-    border-radius: 999px;
-    background: #FFE9A8;
-    color: #8A4B08;
-}
-
-.flash-sub {
-    font-size: 11.5px;
-    color: #B98B5E;
-    margin-top: 3px;
-}
-
-.flash-right {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.flash-right .lbl {
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: .5px;
-    color: #8A4B08;
+    letter-spacing: 1.2px;
     text-transform: uppercase;
 }
 
-.cd {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+.fb-cal-d {
+    display: block;
+    padding: 8px 0 10px;
+    font-size: 30px;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--head);
+    font-variant-numeric: tabular-nums;
 }
 
-.cd-box {
-    width: 52px;
-    height: 52px;
+.fb-eyebrow {
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--amber);
+}
+
+.fb-weekday {
+    margin-top: 3px;
+    font-size: 28px;
+    line-height: 1.1;
+    font-weight: 800;
+    letter-spacing: -.2px;
+    color: var(--head);
+}
+
+.fb-full {
+    margin-top: 5px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #B98B5E;
+}
+
+/* --- Bên phải: đồng hồ --- */
+.fb-clock {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.fb-live {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .8px;
+    text-transform: uppercase;
+    color: #8A4B08;
+}
+
+/* chấm cam nhấp nháy = đang chạy trực tiếp */
+.fb-live i {
+    position: relative;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--orange);
+}
+
+.fb-live i::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: var(--orange);
+    animation: fb-pulse 1.8s ease-out infinite;
+}
+
+@keyframes fb-pulse {
+    from {
+        transform: scale(1);
+        opacity: .6;
+    }
+
+    to {
+        transform: scale(3.2);
+        opacity: 0;
+    }
+}
+
+.fb-digits {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.fb-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+}
+
+/* ô số: nền nâu đậm, có đường chia giữa như đồng hồ lật */
+.fb-unit b {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 68px;
+    height: 62px;
     border-radius: 14px;
-    background: #FFF1CC;
-    border: 1px solid #F8E3BC;
+    background: linear-gradient(180deg, #7E4818 0%, #64360F 50%, #4F2B0B 50%, #5E330E 100%);
+    box-shadow: 0 12px 24px rgba(92, 50, 14, .28), inset 0 1px 0 rgba(255, 255, 255, .14);
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1;
+    color: #FFF4DC;
+    font-variant-numeric: tabular-nums;
+}
+
+.fb-unit b::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 1px;
+    background: rgba(0, 0, 0, .38);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, .06);
+}
+
+.fb-unit span {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .8px;
+    text-transform: uppercase;
+    color: #B98B5E;
+}
+
+/* hai chấm giữa các ô, nhấp nháy mỗi giây */
+.fb-colon {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 12px;
+    width: 8px;
+    height: 62px;
 }
 
-.cd-box b {
-    font-size: 18px;
-    font-weight: 800;
-    color: var(--head);
-    line-height: 1.1;
+.fb-colon::before,
+.fb-colon::after {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--orange);
+    animation: fb-blink 1s ease-in-out infinite;
 }
 
-.cd-box span {
-    font-size: 9.5px;
-    color: #B98B5E;
-}
+@keyframes fb-blink {
 
-.cd-sep {
-    font-weight: 800;
-    color: #C9A06A;
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: .25;
+    }
 }
 
 .p-grid {
@@ -1229,6 +1832,11 @@ main.container {
     grid-template-columns: repeat(4, 1fr);
     gap: 20px;
     margin-top: 20px;
+}
+
+/* Lưới sản phẩm ở trang chủ nằm ngay đầu section nên không cần cách thêm phía trên */
+#flash .p-grid {
+    margin-top: 0;
 }
 
 /* ===== Thẻ sản phẩm: chỉ thấy ảnh, chạm vào thì ảnh mờ nhẹ và thông tin hiện lên trên ===== */
@@ -1495,6 +2103,12 @@ main.container {
         animation: none !important;
         opacity: 0 !important;
     }
+
+    .fb-live i::after,
+    .fb-colon::before,
+    .fb-colon::after {
+        animation: none;
+    }
 }
 
 .p-empty {
@@ -1505,7 +2119,7 @@ main.container {
     font-size: 14px;
 }
 
-/* ===== 3. LookBook ===== */
+/* ===== 3. LookBook (giới thiệu nhẹ: ảnh + mô tả ngắn + lời mời bấm vào xem) ===== */
 .lb-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -1539,7 +2153,12 @@ main.container {
     position: absolute;
     inset: 0;
     z-index: 2;
-    background: linear-gradient(to top, rgba(45, 22, 6, .82) 0%, rgba(45, 22, 6, .4) 32%, rgba(45, 22, 6, 0) 60%);
+    background: linear-gradient(to top, rgba(45, 22, 6, .88) 0%, rgba(45, 22, 6, .5) 38%, rgba(45, 22, 6, 0) 66%);
+}
+
+.lb-card:focus-visible {
+    outline: 3px solid var(--orange);
+    outline-offset: 3px;
 }
 
 .lb-info {
@@ -1575,6 +2194,56 @@ main.container {
     margin: 0;
     opacity: .9;
     line-height: 1.45;
+}
+
+/* Mô tả ngắn kiểu quảng cáo: tối đa 2 dòng, dài hơn thì cắt "..." */
+.lb-info .lb-teaser {
+    font-size: 13px;
+    line-height: 1.55;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Lời mời bấm vào xem: rê chuột vào thẻ thì rõ hơn và mũi tên nhích ra */
+.lb-go {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    padding-bottom: 3px;
+    border-bottom: 2px solid var(--orange);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #fff;
+    opacity: .85;
+    transform: translateY(4px);
+    transition: opacity .3s, transform .3s, gap .3s;
+}
+
+.lb-card:hover .lb-go,
+.lb-card:focus-visible .lb-go {
+    opacity: 1;
+    transform: none;
+    gap: 14px;
+}
+
+/* Màn hình cảm ứng không có rê chuột: hiện rõ lời mời sẵn */
+@media (hover: none) {
+    .lb-go {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .lb-card img,
+    .lb-go {
+        transition: none;
+    }
 }
 
 /* ===== 4. Blog ===== */
@@ -2051,6 +2720,10 @@ main.container {
         align-items: flex-start;
     }
 
+    .fb-clock {
+        align-items: flex-start;
+    }
+
     .lb-grid,
     .b-grid {
         grid-template-columns: 1fr;
@@ -2083,8 +2756,26 @@ main.container {
         grid-template-columns: 1fr;
     }
 
-    .flash-right {
-        flex-wrap: wrap;
+    .flash-bar {
+        padding: 20px 20px 20px 26px;
+    }
+
+    .fb-weekday {
+        font-size: 23px;
+    }
+
+    .fb-unit b {
+        width: 58px;
+        height: 54px;
+        font-size: 27px;
+    }
+
+    .fb-colon {
+        height: 54px;
+    }
+
+    .fb-digits {
+        gap: 7px;
     }
 
     .vc-card {

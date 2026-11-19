@@ -12,7 +12,7 @@
                 <h1 class="page-title">Quản lý danh mục</h1>
                 <p class="page-sub">Tổng cộng ${fn:length(rows)} danh mục</p>
             </div>
-            <a href="${ctx}/admin/categories/new" class="btn-add">+ Thêm danh mục</a>
+            <a href="${ctx}/admin/categories/new" class="btn-add">+ Thêm nhóm</a>
         </div>
 
         <c:if test="${not empty success}">
@@ -75,6 +75,10 @@
                             </td>
                             <td>
                                 <div class="actions">
+                                    <%-- Chỉ dòng "Nhóm" mới có nút này: bấm vào là mở form với nhóm đã chọn sẵn --%>
+                                    <c:if test="${r.root}">
+                                        <a href="${ctx}/admin/categories/new?parentId=${r.id}" class="btn-edit">+ Danh mục con</a>
+                                    </c:if>
                                     <a href="${ctx}/admin/categories/${r.id}/edit" class="btn-edit">Sửa</a>
                                     <form action="${ctx}/admin/categories/${r.id}/delete" method="post"
                                           class="js-delete" data-name="<c:out value='${r.name}'/>">
@@ -89,7 +93,7 @@
             </div>
 
             <c:if test="${empty rows}">
-                <div class="empty">Chưa có danh mục nào. Bấm "Thêm danh mục" để tạo danh mục đầu tiên.</div>
+                <div class="empty">Chưa có danh mục nào. Bấm "Thêm nhóm" để tạo nhóm đầu tiên (ví dụ: Shoes), sau đó bấm "+ Danh mục con" ở dòng của nhóm để thêm Nike Jordan, Adidas...</div>
             </c:if>
             <div class="empty" id="noResult" hidden>Không tìm thấy danh mục phù hợp.</div>
         </div>
@@ -101,7 +105,6 @@
         </p>
 
 <script>
-    // Hỏi xác nhận trước khi xóa
     document.addEventListener('submit', function (e) {
         var form = e.target;
         if (!form.classList.contains('js-delete')) return;

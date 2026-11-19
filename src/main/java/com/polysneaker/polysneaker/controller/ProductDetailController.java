@@ -30,7 +30,7 @@ public class ProductDetailController {
         try {
             product = detailService.getActiveProduct(id);
         } catch (IllegalArgumentException e) {
-            return "redirect:/";           // không có hoặc đã ẩn -> về trang chủ
+            return "redirect:/"; // không có hoặc đã ẩn -> về trang chủ
         }
 
         List<ProductDetail> sizes = detailService.sizesOf(product);
@@ -40,6 +40,8 @@ public class ProductDetailController {
         model.addAttribute("totalStock", detailService.totalStock(sizes));
         model.addAttribute("gallery", detailService.galleryOf(product));
         model.addAttribute("description", detailService.descriptionOf(sizes));
+        model.addAttribute("material", detailService.materialOf(sizes));
+        model.addAttribute("specifications", detailService.specificationsOf(sizes));
 
         // Gợi ý "Có thể bạn cũng thích": sản phẩm trang chủ, bỏ chính nó, lấy 4 cái
         List<Product> related = productService.findHomeProducts(8).stream()
@@ -48,6 +50,6 @@ public class ProductDetailController {
                 .toList();
         model.addAttribute("related", related);
 
-        return "product-detail";            
+        return "product-detail";
     }
 }

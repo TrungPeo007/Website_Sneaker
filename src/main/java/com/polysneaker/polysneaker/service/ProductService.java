@@ -74,6 +74,9 @@ public class ProductService {
             f.getSizes().add(d.getSize());
             f.getStocks().add(d.getStockQuantity());
             if (f.getDescription() == null) f.setDescription(d.getDescription());
+            // [CHẤT LIỆU] lấy giá trị đầu tiên có chữ trong các size
+            if (isBlank(f.getMaterial())) f.setMaterial(d.getMaterial());
+            if (isBlank(f.getSpecifications())) f.setSpecifications(d.getSpecifications());
         }
         // [ẢNH PHỤ] nạp ảnh phụ đã lưu lên form (bỏ ảnh trùng với ảnh đại diện)
         f.setGalleryImages(loadGallery(p.getId(), p.getMainImageUrl()));
@@ -111,6 +114,14 @@ public class ProductService {
 
         if (f.getBadge() != null && f.getBadge().trim().length() > 30) {
             errors.put("badge", "Nhãn tối đa 30 ký tự.");
+        }
+
+        // [CHẤT LIỆU] giới hạn độ dài (cột Material trong database dài tối đa 500 ký tự)
+        if (f.getMaterial() != null && f.getMaterial().trim().length() > 500) {
+            errors.put("material", "Chất liệu tối đa 500 ký tự.");
+        }
+        if (f.getSpecifications() != null && f.getSpecifications().length() > 20_000) {
+            errors.put("specifications", "Thông số kỹ thuật quá dài (tối đa 20.000 ký tự).");
         }
 
         // [ẢNH PHỤ] tối đa 10 ảnh
@@ -170,6 +181,8 @@ public class ProductService {
 
         // Thêm mới / cập nhật size (giữ nguyên SoldQuantity của size cũ)
         String desc = blankToNull(f.getDescription());
+        String material = blankToNull(f.getMaterial());               // [CHẤT LIỆU]
+        String specs = blankToNull(f.getSpecifications());            // [CHẤT LIỆU]
         for (Map.Entry<BigDecimal, Integer> e : wanted.entrySet()) {
             ProductDetail detail = p.getDetails().stream()
                     .filter(d -> d.getSize().compareTo(e.getKey()) == 0)
@@ -183,6 +196,8 @@ public class ProductService {
             }
             detail.setStockQuantity(e.getValue());
             detail.setDescription(desc);
+            detail.setMaterial(material);                              // [CHẤT LIỆU]
+            detail.setSpecifications(specs);                           // [CHẤT LIỆU]
         }
 
         Product saved = productRepository.save(p);
@@ -231,6 +246,10 @@ public class ProductService {
                     "INSERT INTO ProductImages (ProductId, ImageUrl, SortOrder) VALUES (?, ?, ?)",
                     productId, v, order++);
         }
+    }
+
+    private static boolean isBlank(String s) {
+        return s == null || s.isBlank();
     }
 
     private static String blankToNull(String s) {

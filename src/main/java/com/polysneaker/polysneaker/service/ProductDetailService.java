@@ -52,8 +52,7 @@ public class ProductDetailService {
     public int totalStock(List<ProductDetail> sizes) {
         int total = 0;
         for (ProductDetail d : sizes) {
-            Integer stock = d.getStockQuantity();
-            total += (stock == null ? 0 : stock);
+            total += d.getStockQuantity();
         }
         return total;
     }
@@ -64,6 +63,28 @@ public class ProductDetailService {
             String desc = d.getDescription();
             if (desc != null && !desc.isBlank()) {
                 return desc.trim();
+            }
+        }
+        return null;
+    }
+
+    /** Chất liệu: lấy giá trị đầu tiên không trống trong các size. */
+    public String materialOf(List<ProductDetail> sizes) {
+        for (ProductDetail d : sizes) {
+            String v = d.getMaterial();
+            if (v != null && !v.isBlank()) {
+                return v.trim();
+            }
+        }
+        return null;
+    }
+
+    /** Thông số kỹ thuật: lấy giá trị đầu tiên không trống trong các size. */
+    public String specificationsOf(List<ProductDetail> sizes) {
+        for (ProductDetail d : sizes) {
+            String v = d.getSpecifications();
+            if (v != null && !v.isBlank()) {
+                return v.trim();
             }
         }
         return null;

@@ -1,14 +1,90 @@
 /* ===== CSS riêng của trang thêm/sửa danh mục (category-form.jsp) ===== */
+
+:root {
+    --ease: cubic-bezier(.22, .8, .3, 1);
+}
+
+/* ---------- Hiệu ứng dùng chung ---------- */
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes barGrow {
+    from { width: 0; }
+    to   { width: 44px; }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%      { transform: translateX(-6px); }
+    40%      { transform: translateX(6px); }
+    60%      { transform: translateX(-4px); }
+    80%      { transform: translateX(4px); }
+}
+
 .content-in {
     max-width: 640px;
 }
 
-.card {
-    padding: 28px;
+/* Tiêu đề + thanh cam chạy ra */
+.page-title {
+    position: relative;
+    padding-bottom: 10px;
+    animation: fadeDown .5s var(--ease) both;
 }
 
+.page-title::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 4px;
+    width: 44px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--orange), #FFC46B);
+    animation: barGrow .7s .25s var(--ease) both;
+}
+
+.page-sub {
+    animation: fadeDown .5s .05s var(--ease) both;
+}
+
+/* Thông báo lỗi: trượt xuống rồi rung nhẹ để gây chú ý */
+.alert {
+    animation: fadeDown .45s var(--ease) both, shake .5s .45s ease-in-out;
+}
+
+/* ---------- Khung form ---------- */
+.card {
+    padding: 28px;
+    animation: fadeUp .55s .1s var(--ease) both;
+    transition: box-shadow .3s var(--ease);
+}
+
+.card:hover,
+.card:focus-within {
+    box-shadow: 0 18px 40px rgba(122, 78, 24, .08);
+}
+
+/* Các ô hiện lần lượt */
 .field {
     margin-bottom: 18px;
+    animation: fadeUp .5s var(--ease) both;
+}
+
+.field:nth-of-type(1) { animation-delay: .20s; }
+.field:nth-of-type(2) { animation-delay: .27s; }
+.field:nth-of-type(3) { animation-delay: .34s; }
+.field:nth-of-type(4) { animation-delay: .41s; }
+
+.form-actions {
+    animation: fadeUp .5s .48s var(--ease) both;
 }
 
 label.f {
@@ -17,6 +93,13 @@ label.f {
     font-weight: 700;
     color: var(--brown);
     margin-bottom: 6px;
+    transition: color .2s, transform .25s var(--ease);
+}
+
+/* Ô đang gõ thì nhãn đổi màu cam */
+.field:focus-within label.f {
+    color: var(--orange-dark);
+    transform: translateX(2px);
 }
 
 .req {
@@ -28,6 +111,7 @@ label.f {
     color: var(--muted);
 }
 
+/* ---------- Ô nhập ---------- */
 input[type=text],
 select,
 textarea {
@@ -40,7 +124,13 @@ textarea {
     font-size: 14px;
     color: var(--text);
     outline: none;
-    transition: border-color .15s, background .15s;
+    transition: border-color .2s, background .2s, box-shadow .25s var(--ease);
+}
+
+input[type=text]:hover,
+select:hover:not(:disabled),
+textarea:hover {
+    border-color: #F3C98B;
 }
 
 textarea {
@@ -48,11 +138,31 @@ textarea {
     resize: vertical;
 }
 
+/* Mũi tên riêng cho ô chọn nhóm */
+select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 42px;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23F7941D' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 16px;
+}
+
 input:focus,
 select:focus,
 textarea:focus {
     border-color: var(--orange);
-    background: #fff;
+    background-color: #fff;
+    box-shadow: 0 0 0 4px rgba(247, 148, 29, .15);
+}
+
+/* Nhập sai (bỏ trống ô bắt buộc...) thì viền đỏ nhẹ */
+input:user-invalid,
+textarea:user-invalid {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 4px rgba(214, 69, 20, .1);
 }
 
 select:disabled {
@@ -67,21 +177,63 @@ select:disabled {
     line-height: 1.5;
 }
 
+/* ---------- Công tắc "Hiển thị ngoài cửa hàng" ---------- */
 .check {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     font-size: 14px;
     font-weight: 700;
     color: var(--head);
+    cursor: pointer;
+    user-select: none;
 }
 
 .check input {
-    width: 18px;
-    height: 18px;
-    accent-color: var(--orange);
+    appearance: none;
+    -webkit-appearance: none;
+    position: relative;
+    flex-shrink: 0;
+    width: 46px;
+    height: 26px;
+    margin: 0;
+    border-radius: 999px;
+    background: #E6D7BB;
+    cursor: pointer;
+    transition: background .25s var(--ease), box-shadow .25s var(--ease);
 }
 
+.check input::before {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, .25);
+    transition: transform .3s var(--ease);
+}
+
+.check input:checked {
+    background: var(--orange);
+}
+
+.check input:checked::before {
+    transform: translateX(20px);
+}
+
+.check input:hover {
+    box-shadow: 0 0 0 4px rgba(247, 148, 29, .15);
+}
+
+.check input:focus-visible {
+    outline: 3px solid rgba(247, 148, 29, .45);
+    outline-offset: 2px;
+}
+
+/* ---------- Nút ---------- */
 .form-actions {
     display: flex;
     justify-content: flex-end;
@@ -90,21 +242,48 @@ select:disabled {
 }
 
 .btn-save {
+    position: relative;
+    overflow: hidden;
     height: 44px;
     padding: 0 28px;
     border: none;
     border-radius: 999px;
     background: var(--orange);
     color: #fff;
+    font-family: inherit;
     font-weight: 800;
     font-size: 14px;
     cursor: pointer;
     box-shadow: 0 10px 22px rgba(247, 148, 29, .3);
-    transition: background .15s;
+    transition: background .2s, transform .25s var(--ease), box-shadow .25s var(--ease);
+}
+
+/* Vệt sáng quét ngang khi rê chuột */
+.btn-save::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -80%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(100deg, transparent, rgba(255, 255, 255, .45), transparent);
+    transform: skewX(-20deg);
+    transition: left .6s var(--ease);
 }
 
 .btn-save:hover {
     background: var(--orange-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 14px 28px rgba(247, 148, 29, .38);
+}
+
+.btn-save:hover::after {
+    left: 130%;
+}
+
+.btn-save:active {
+    transform: translateY(0) scale(.97);
+    box-shadow: 0 6px 14px rgba(247, 148, 29, .3);
 }
 
 .btn-cancel {
@@ -118,8 +297,31 @@ select:disabled {
     font-size: 14px;
     display: inline-flex;
     align-items: center;
+    transition: background .2s, border-color .2s, transform .25s var(--ease);
 }
 
 .btn-cancel:hover {
     background: var(--cream);
+    border-color: var(--orange);
+    transform: translateY(-2px);
+}
+
+.btn-cancel:active {
+    transform: translateY(0) scale(.97);
+}
+
+.btn-save:focus-visible,
+.btn-cancel:focus-visible {
+    outline: 3px solid rgba(247, 148, 29, .45);
+    outline-offset: 2px;
+}
+
+/* ---------- Người dùng tắt hiệu ứng chuyển động trong hệ điều hành ---------- */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation: none !important;
+        transition: none !important;
+    }
 }

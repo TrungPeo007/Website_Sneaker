@@ -30,7 +30,7 @@
                     Khám phá bộ sưu tập
                     <svg width="16" height="16"><use href="#ic-arrow"/></svg>
                 </a>
-                <a href="#lookbook" class="btn-soft">
+                <a href="${ctx}/lookbooks" class="btn-soft">
                     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                     Xem LookBook
                 </a>
@@ -68,30 +68,8 @@
         </div>
     </section>
 
-    <!-- ===== 2. FLASH DROP (sản phẩm lấy từ database) ===== -->
+    <!-- ===== 2. SẢN PHẨM (lấy từ database) ===== -->
     <section class="sec" id="flash">
-        <div class="flash-bar">
-            <div class="flash-left">
-                <span class="flash-ico">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></svg>
-                </span>
-                <div>
-                    <div class="flash-title">Flash Drop Giới Hạn <span class="pill">SỐ LƯỢNG CÓ HẠN</span></div>
-                    <div class="flash-sub">Ưu đãi giảm trực tiếp theo khung giờ vàng trong ngày</div>
-                </div>
-            </div>
-            <div class="flash-right">
-                <span class="lbl">Kết thúc sau:</span>
-                <div class="cd">
-                    <div class="cd-box"><b id="cd-h">08</b><span>Giờ</span></div>
-                    <span class="cd-sep">:</span>
-                    <div class="cd-box"><b id="cd-m">39</b><span>Phút</span></div>
-                    <span class="cd-sep">:</span>
-                    <div class="cd-box"><b id="cd-s">39</b><span>Giây</span></div>
-                </div>
-            </div>
-        </div>
-
         <div class="p-grid">
             <c:forEach var="p" items="${products}">
                 <%-- Bấm vào thẻ (hoặc tên sản phẩm) để xem chi tiết: /products/{id} --%>
@@ -149,43 +127,95 @@
         </div>
     </section>
 
-    <!-- ===== 3. LOOKBOOK ===== -->
+    <!-- ===== 3. LOOKBOOK (lấy từ database, dạng giới thiệu nhẹ để kéo người xem bấm vào) ===== -->
+    <c:if test="${not empty lookbooks}">
     <section class="sec" id="lookbook">
         <div class="sec-head">
             <div>
                 <div class="eyebrow">Phong cách thường nhật</div>
                 <h2 class="sec-title">LookBook: Sắc Màu Phố Á Đông</h2>
             </div>
-            <a href="#" class="pill-link">Khám Phá Tất Cả LookBook <svg width="14" height="14"><use href="#ic-arrow"/></svg></a>
+            <a href="${ctx}/lookbooks" class="pill-link">Khám Phá Tất Cả LookBook <svg width="14" height="14"><use href="#ic-arrow"/></svg></a>
         </div>
 
         <div class="lb-grid">
-            <a href="#" class="lb-card" style="--g: linear-gradient(160deg, #D9A173, #7A4A2A);">
-                <img src="${ctx}/static/assets/images/LookBook_sneaker.jpg" alt="Thanh Lịch Phố Harajuku" onerror="this.style.display='none'">
-                <div class="lb-info">
-                    <span class="lb-tag">Tokyo Minimal</span>
-                    <h3>Thanh Lịch Phố Harajuku</h3>
-                    <p>Bản phối tone be &amp; trắng ngà dịu dàng cho ngày dạo phố</p>
-                </div>
-            </a>
+            <c:forEach var="l" items="${lookbooks}" varStatus="st">
 
-            <a href="#" class="lb-card" style="--g: linear-gradient(160deg, #EBA77E, #4A3030);">
-                <img src="${ctx}/static/assets/images/Look_BooK_Collections_2.jpg" alt="Năng Động Buổi Sớm Seoul" onerror="this.style.display='none'">
-                <div class="lb-info">
-                    <span class="lb-tag">Seoul Runner</span>
-                    <h3>Năng Động Buổi Sớm Seoul</h3>
-                    <p>Đệm êm phản hồi lực, phong thái thoải mái không gò bó</p>
-                </div>
-            </a>
+                <%-- Đường dẫn ảnh bìa: http... dùng nguyên; bắt đầu bằng / thì thêm ctx; còn lại coi là tên file --%>
+                <c:set var="lsrc" value=""/>
+                <c:if test="${not empty l.coverImageUrl}">
+                    <c:choose>
+                        <c:when test="${fn:startsWith(l.coverImageUrl, 'http')}">
+                            <c:set var="lsrc" value="${l.coverImageUrl}"/>
+                        </c:when>
+                        <c:when test="${fn:startsWith(l.coverImageUrl, '/')}">
+                            <c:set var="lsrc" value="${ctx}${l.coverImageUrl}"/>
+                        </c:when>
+                        <c:otherwise>
+                            <c:set var="lsrc" value="${ctx}/static/assets/images/${l.coverImageUrl}"/>
+                        </c:otherwise>
+                    </c:choose>
+                </c:if>
 
-            <a href="#" class="lb-card" style="--g: linear-gradient(160deg, #DDA85E, #2E1B10);">
-                <img src="${ctx}/static/assets/images/Crown_Lookbook_-_Sneaker_Range19.jpg" alt="Cân Bằng Giữa Thể Thao và Gu Ăn Mặc" onerror="this.style.display='none'">
-                <div class="lb-info">
-                    <span class="lb-tag">Daily Court</span>
-                    <h3>Cân Bằng Giữa Thể Thao &amp; Gu Ăn Mặc</h3>
-                    <p>Bảo vệ mắt cá êm ái, kết hợp quần ống suông tinh tế</p>
+                <%-- Nền dự phòng (hiện khi chưa có ảnh bìa) --%>
+                <c:choose>
+                    <c:when test="${st.index % 3 == 0}"><c:set var="lg" value="linear-gradient(160deg, #D9A173, #7A4A2A)"/></c:when>
+                    <c:when test="${st.index % 3 == 1}"><c:set var="lg" value="linear-gradient(160deg, #EBA77E, #4A3030)"/></c:when>
+                    <c:otherwise><c:set var="lg" value="linear-gradient(160deg, #DDA85E, #2E1B10)"/></c:otherwise>
+                </c:choose>
+
+                <a href="${ctx}/lookbooks/${l.id}#lbdProducts" class="lb-card" style="--g: ${lg};"
+                   aria-label="Xem bộ sưu tập <c:out value='${l.title}'/>">
+                    <c:if test="${not empty lsrc}">
+                        <img src="<c:out value='${lsrc}'/>" alt="<c:out value='${l.title}'/>"
+                             loading="lazy" onerror="this.style.display='none'">
+                    </c:if>
+                    <div class="lb-info">
+                        <span class="lb-tag">
+                            <c:choose>
+                                <c:when test="${l.photoCount gt 0}">${l.photoCount} ảnh phối đồ</c:when>
+                                <c:otherwise>Bộ sưu tập mới</c:otherwise>
+                            </c:choose>
+                        </span>
+                        <h3><c:out value="${l.title}"/></h3>
+                        <c:if test="${not empty l.description}">
+                            <p class="lb-teaser"><c:out value="${l.description}"/></p>
+                        </c:if>
+                        <span class="lb-go">Khám phá bộ sưu tập <svg width="14" height="14"><use href="#ic-arrow"/></svg></span>
+                    </div>
+                </a>
+            </c:forEach>
+        </div>
+    </section>
+    </c:if>
+
+    <!-- ===== 3b. NGÀY GIỜ (nằm dưới LookBook) ===== -->
+    <section class="sec" id="now">
+        <div class="flash-bar">
+            <%-- Trái: lịch nhỏ + thứ, ngày (JS điền vào; chữ trong HTML là dự phòng khi chưa có JS) --%>
+            <div class="fb-date">
+                <div class="fb-cal" aria-hidden="true">
+                    <span class="fb-cal-m" id="nowMonth">Tháng</span>
+                    <b class="fb-cal-d" id="nowDay">--</b>
                 </div>
-            </a>
+                <div class="fb-date-txt">
+                    <span class="fb-eyebrow">Hôm nay</span>
+                    <div class="fb-weekday" id="nowWeekday">--</div>
+                    <div class="fb-full" id="nowFull"></div>
+                </div>
+            </div>
+
+            <%-- Phải: đồng hồ thời gian thực kiểu lật số --%>
+            <div class="fb-clock">
+                <span class="fb-live"><i></i>Giờ cửa hàng · Việt Nam</span>
+                <div class="fb-digits">
+                    <div class="fb-unit"><b id="cd-h">--</b><span>Giờ</span></div>
+                    <span class="fb-colon" aria-hidden="true"></span>
+                    <div class="fb-unit"><b id="cd-m">--</b><span>Phút</span></div>
+                    <span class="fb-colon" aria-hidden="true"></span>
+                    <div class="fb-unit"><b id="cd-s">--</b><span>Giây</span></div>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -317,24 +347,74 @@
     </section>
 
 <script>
-    // Đồng hồ đếm ngược Flash Drop (bắt đầu 08:39:39, hết thì lặp lại)
+    // Đồng hồ thời gian thực (giờ Việt Nam) + thứ, ngày, tháng, năm; cập nhật mỗi giây
     (function () {
-        var START = 8 * 3600 + 39 * 60 + 39;
-        var left = START;
         var h = document.getElementById('cd-h');
         var m = document.getElementById('cd-m');
         var s = document.getElementById('cd-s');
+        if (!h || !m || !s) return;
+
+        var elMonth = document.getElementById('nowMonth');
+        var elDay = document.getElementById('nowDay');
+        var elWeekday = document.getElementById('nowWeekday');
+        var elFull = document.getElementById('nowFull');
+
         function two(n) { return (n < 10 ? '0' : '') + n; }
-        function render() {
-            h.textContent = two(Math.floor(left / 3600));
-            m.textContent = two(Math.floor((left % 3600) / 60));
-            s.textContent = two(left % 60);
+
+        var timeFmt = null, dateFmt = null;
+        try {
+            timeFmt = new Intl.DateTimeFormat('en-GB', {
+                timeZone: 'Asia/Ho_Chi_Minh', hour: '2-digit', minute: '2-digit',
+                second: '2-digit', hourCycle: 'h23'
+            });
+            dateFmt = new Intl.DateTimeFormat('vi-VN', {
+                timeZone: 'Asia/Ho_Chi_Minh', weekday: 'long',
+                day: '2-digit', month: '2-digit', year: 'numeric'
+            });
+        } catch (e) { /* trình duyệt cũ: dùng giờ của máy */ }
+
+        var WEEKDAYS = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+        var lastDay = '';
+
+        function tick() {
+            var now = new Date();
+            var hh = now.getHours(), mm = now.getMinutes(), ss = now.getSeconds();
+            if (timeFmt) {
+                var parts = timeFmt.formatToParts(now);
+                for (var i = 0; i < parts.length; i++) {
+                    if (parts[i].type === 'hour') hh = parseInt(parts[i].value, 10);
+                    else if (parts[i].type === 'minute') mm = parseInt(parts[i].value, 10);
+                    else if (parts[i].type === 'second') ss = parseInt(parts[i].value, 10);
+                }
+            }
+            h.textContent = two(hh % 24);
+            m.textContent = two(mm);
+            s.textContent = two(ss);
+
+            // Ngày chỉ cần vẽ lại khi đổi ngày
+            var wd = WEEKDAYS[now.getDay()], dd = two(now.getDate()),
+                mo = two(now.getMonth() + 1), yy = String(now.getFullYear());
+            if (dateFmt) {
+                var d = dateFmt.formatToParts(now);
+                for (var j = 0; j < d.length; j++) {
+                    if (d[j].type === 'weekday') wd = d[j].value;
+                    else if (d[j].type === 'day') dd = d[j].value;
+                    else if (d[j].type === 'month') mo = d[j].value;
+                    else if (d[j].type === 'year') yy = d[j].value;
+                }
+            }
+            var key = wd + dd + mo + yy;
+            if (key !== lastDay) {
+                lastDay = key;
+                if (elMonth) elMonth.textContent = 'Tháng ' + parseInt(mo, 10);
+                if (elDay) elDay.textContent = dd;
+                if (elWeekday) elWeekday.textContent = wd;
+                if (elFull) elFull.textContent = 'Ngày ' + parseInt(dd, 10) + ' tháng ' + parseInt(mo, 10) + ', năm ' + yy;
+            }
         }
-        render();
-        setInterval(function () {
-            left = left > 0 ? left - 1 : START;
-            render();
-        }, 1000);
+
+        tick();
+        setInterval(tick, 500);   // 500ms để giây nhảy đúng nhịp, không bị trễ
     })();
 
     // Bấm tim để thích / bỏ thích

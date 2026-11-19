@@ -19,6 +19,8 @@ public class ProductForm {
     private String badge;
     private boolean active = true;
     private String description;
+    private String material;            // chất liệu
+    private String specifications;      // thông số kỹ thuật (mỗi dòng một thông số)
     private List<BigDecimal> sizes = new ArrayList<>();
     private List<Integer> stocks = new ArrayList<>();
     private List<String> galleryImages = new ArrayList<>();

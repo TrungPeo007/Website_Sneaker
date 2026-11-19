@@ -29,7 +29,7 @@
     </c:choose>
 </c:if>
 
-<%-- CSS của trang chi tiết sản phẩm --%>
+<%-- CSS của trang chi tiết sản phẩm (toàn bộ style nằm trong file này) --%>
 <link rel="stylesheet" href="${ctx}/static/assets/css/product-detail.css">
 
 <section class="pd">
@@ -204,18 +204,80 @@
         </div>
     </div>
 
-    <%--===== Mô tả =====--%>
-    <div class="pd-sec">
-        <h2>Mô tả sản phẩm</h2>
-        <c:choose>
-            <c:when test="${not empty description}">
-                <div class="pd-desc"><c:out value="${description}" /></div>
-            </c:when>
-            <c:otherwise>
-                <div class="pd-desc empty">Sản phẩm chưa có mô tả.</div>
-            </c:otherwise>
-        </c:choose>
-    </div>
+    <%--===== 01 Mô tả (phong cách tạp chí) =====--%>
+    <section class="pd-story" id="pdDescSec">
+        <span class="pd-story-ghost" id="pdGhost" aria-hidden="true">
+            <c:out value="${not empty product.category ? product.category.name : 'Story'}" />
+        </span>
+
+        <header class="pd-story-side">
+            <span class="pd-story-no">01</span>
+            <h2>Mô tả<br>sản phẩm</h2>
+            <span class="pd-story-tick"></span>
+        </header>
+
+        <div class="pd-story-main">
+            <c:choose>
+                <c:when test="${not empty description}">
+                    <div class="pd-story-body" id="pdDescBody">
+                        <p class="pd-lead" id="pdLead"></p>
+                        <div class="pd-specs" id="pdSpecs"></div>
+                        <div class="pd-paras" id="pdParas"></div>
+                    </div>
+
+                    <button type="button" class="pd-more" id="pdDescToggle" hidden>
+                        <span class="pd-more-txt">Xem thêm</span>
+                        <i class="pd-more-ico"></i>
+                    </button>
+
+                    <%-- Nội dung gốc, JS đọc rồi phân tách. Không có JS vẫn hiển thị --%>
+                    <div class="pd-story-raw" id="pdDescRaw"><c:out value="${description}" /></div>
+                </c:when>
+                <c:otherwise>
+                    <p class="pd-story-empty">Sản phẩm chưa có mô tả.</p>
+                </c:otherwise>
+            </c:choose>
+        </div>
+    </section>
+
+    <%--===== 02 Chất liệu (thụt vào nhẹ) =====--%>
+    <%-- Cần controller đưa biến "material" vào model. Trống thì ẩn cả mục. --%>
+    <c:if test="${not empty material}">
+        <section class="pd-story pd-story--inset" id="pdMatSec">
+            <span class="pd-story-ghost" aria-hidden="true">Made</span>
+
+            <header class="pd-story-side">
+                <span class="pd-story-no">02</span>
+                <h2>Chất liệu</h2>
+                <span class="pd-story-tick"></span>
+            </header>
+
+            <div class="pd-story-main">
+                <p class="pd3-material"><c:out value="${material}" /></p>
+            </div>
+        </section>
+    </c:if>
+
+    <%--===== 03 Thông số kỹ thuật (sát ngoài, cùng hàng với 01) =====--%>
+    <%-- Cần controller đưa biến "specifications" vào model. Trống thì ẩn cả mục.
+         Nếu sản phẩm không có chất liệu thì mục này tự đổi thành 02 và thụt vào. --%>
+    <c:if test="${not empty specifications}">
+        <section class="pd-story${empty material ? ' pd-story--inset' : ''}" id="pdSpecSec">
+            <span class="pd-story-ghost" aria-hidden="true">Specs</span>
+
+            <header class="pd-story-side">
+                <span class="pd-story-no">${empty material ? '02' : '03'}</span>
+                <h2>Thông số<br>kỹ thuật</h2>
+                <span class="pd-story-tick"></span>
+            </header>
+
+            <div class="pd-story-main">
+                <div class="pd3-specs" id="pd3Specs" hidden></div>
+                <%-- Nội dung gốc, JS đọc rồi chia thành bảng. Không có JS vẫn hiển thị --%>
+                <div class="pd3-raw" id="pd3Raw"><c:out value="${specifications}" /></div>
+            </div>
+        </section>
+    </c:if>
 
     <%--===== Gợi ý =====--%>
     <c:if test="${not empty related}">
@@ -287,5 +349,45 @@
 
 <%-- JS của trang chi tiết sản phẩm (phải nằm sau phần HTML ở trên) --%>
 <script src="${ctx}/static/assets/js/product-detail.js"></script>
+
+<%-- Chia "Thông số kỹ thuật" thành bảng: mỗi dòng "Tên: giá trị" là một hàng --%>
+<script>
+    (function () {
+        var raw = document.getElementById('pd3Raw');
+        var box = document.getElementById('pd3Specs');
+        if (!raw || !box) return;
+
+        var lines = raw.textContent.split(/\r?\n/).map(function (s) { return s.trim(); })
+                                   .filter(function (s) { return s.length > 0; });
+        if (!lines.length) return;
+
+        lines.forEach(function (line) {
+            var row = document.createElement('div');
+            row.className = 'pd3-row';
+            var i = line.indexOf(':');
+
+            if (i > 0 && i < line.length - 1) {
+                var k = document.createElement('span');
+                k.className = 'pd3-key';
+                k.textContent = line.slice(0, i).trim();
+                var dots = document.createElement('span');
+                dots.className = 'pd3-dots';
+                var v = document.createElement('span');
+                v.className = 'pd3-val';
+                v.textContent = line.slice(i + 1).trim();
+                row.appendChild(k);
+                row.appendChild(dots);
+                row.appendChild(v);
+            } else {
+                row.classList.add('full');
+                row.textContent = line;
+            }
+            box.appendChild(row);
+        });
+
+        box.hidden = false;
+        raw.hidden = true;
+    })();
+</script>
 
 <jsp:include page="/WEB-INF/views/layouts/footer.jsp" />

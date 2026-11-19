@@ -27,6 +27,12 @@ public class ProductDetail {
     @Column(name = "Description", columnDefinition = "NVARCHAR(MAX)")
     private String description;
 
+    @Column(name = "Material", columnDefinition = "NVARCHAR(500)")
+    private String material;                // chất liệu
+
+    @Column(name = "Specifications", columnDefinition = "NVARCHAR(MAX)")
+    private String specifications;          // thông số kỹ thuật
+
     @Column(name = "StockQuantity", nullable = false)
     private int stockQuantity;
 

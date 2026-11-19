@@ -16,7 +16,6 @@ import java.util.regex.Pattern;
 @Service
 public class AccountService {
 
-    private static final Pattern USERNAME = Pattern.compile("^[A-Za-z0-9_.]{3,50}$");
     private static final Pattern EMAIL = Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
 
     private final AccountRepository accountRepository;
@@ -36,8 +35,8 @@ public class AccountService {
         String password = form.getPassword() == null ? "" : form.getPassword();
         String confirm = form.getConfirmPassword() == null ? "" : form.getConfirmPassword();
 
-        if (!USERNAME.matcher(username).matches()) {
-            errors.put("username", "Tên đăng nhập 3-50 ký tự, chỉ gồm chữ, số, dấu _ hoặc .");
+        if (username.isEmpty() || username.length() > 50) {
+            errors.put("username", "Tên đăng nhập không được để trống và tối đa 50 ký tự");
         } else if (accountRepository.existsByUsername(username)) {
             errors.put("username", "Tên đăng nhập đã tồn tại");
         }

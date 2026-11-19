@@ -66,7 +66,7 @@
                     <%-- Tên file ảnh sau khi tải lên được lưu ở đây và gửi cùng form --%>
                     <input type="hidden" id="mainImageUrl" name="mainImageUrl"
                            value="<c:out value='${form.mainImageUrl}'/>">
-                    <input type="file" id="imageFile" accept="image/png,image/jpeg,image/webp,image/gif" hidden>
+                    <input type="file" id="imageFile" accept="image/*,.heic,.heif,.avif,.jfif,.jxl,.tif,.tiff" hidden>
 
                     <div class="upload-row">
                         <button type="button" class="btn-browse" id="browseBtn">
@@ -76,7 +76,7 @@
                         <button type="button" class="btn-sm" id="clearImg" hidden>Xóa ảnh</button>
                         <span class="file-name" id="fileName">Chưa chọn ảnh</span>
                     </div>
-                    <div class="hint" id="uploadHint">Hỗ trợ JPG, PNG, WEBP, GIF, tối đa 5MB.</div>
+                    <div class="hint" id="uploadHint">Chọn file ảnh bất kỳ (JPG, PNG, WEBP, AVIF, GIF, BMP, SVG...), tối đa 5MB.</div>
 
                     <div class="preview" id="preview">
                         <span id="previewTxt">Chưa có ảnh</span>
@@ -87,7 +87,7 @@
                 <%-- ===== Ảnh phụ (các góc chụp khác) ===== --%>
                 <div class="full">
                     <label class="f">Ảnh phụ <span class="opt">(các góc chụp khác, tối đa 10 ảnh)</span></label>
-                    <input type="file" id="galleryFile" accept="image/png,image/jpeg,image/webp,image/gif" multiple hidden>
+                    <input type="file" id="galleryFile" accept="image/*,.heic,.heif,.avif,.jfif,.jxl,.tif,.tiff" multiple hidden>
 
                     <div class="gal-grid" id="galGrid">
                         <c:forEach var="g" items="${form.galleryImages}">
@@ -107,12 +107,27 @@
                             Thêm ảnh
                         </button>
                     </div>
-                    <div class="hint" id="galHint">Chọn được nhiều ảnh cùng lúc. Thứ tự các ô là thứ tự hiển thị ở trang sản phẩm, ảnh đại diện luôn hiện đầu tiên.</div>
+                    <div class="hint" id="galHint">Chọn được nhiều ảnh cùng lúc, đuôi ảnh nào cũng được. Thứ tự các ô là thứ tự hiển thị ở trang sản phẩm, ảnh đại diện luôn hiện đầu tiên.</div>
                 </div>
 
                 <div class="full">
                     <label class="f" for="description">Mô tả</label>
                     <textarea id="description" name="description"><c:out value="${form.description}"/></textarea>
+                </div>
+
+                <%-- ===== Chất liệu + Thông số kỹ thuật (nằm ngay dưới Mô tả) ===== --%>
+                <div class="full">
+                    <label class="f" for="material">Chất liệu</label>
+                    <input type="text" id="material" name="material" maxlength="500"
+                           placeholder="VD: Da thật, đế cao su, lót vải lưới"
+                           value="<c:out value='${form.material}'/>">
+                </div>
+
+                <div class="full">
+                    <label class="f" for="specifications">Thông số kỹ thuật</label>
+                    <textarea id="specifications" name="specifications"
+                              placeholder="Mỗi dòng một thông số, ví dụ:&#10;Trọng lượng: 350g&#10;Chiều cao cổ giày: Cao cổ&#10;Xuất xứ: Việt Nam"><c:out value="${form.specifications}"/></textarea>
+                    <div class="hint">Mỗi dòng ghi một thông số để khách dễ đọc.</div>
                 </div>
 
                 <div class="full">
@@ -156,6 +171,13 @@
         </form>
 
 <script>
+    // Nhận mọi file ảnh: trình duyệt báo là ảnh (image/...) hoặc đuôi file là đuôi ảnh quen thuộc.
+    // Kiểm tra thêm đuôi vì một số loại (HEIC, JFIF, AVIF...) trình duyệt có thể không báo loại file.
+   var IMG_EXT = /\.(jpe?g|jfif|pjpeg|pjp|png|apng|gif|webp|avif|bmp|dib|tiff?|svg|ico|cur|heic|heif|jxl|jp2|j2k|jpx|psd|tga|dds|hdr|exr|pcx|pnm|pbm|pgm|ppm|wbmp|xbm)$/i;
+    function isImageFile(file) {
+        return (file.type && file.type.indexOf('image/') === 0) || IMG_EXT.test(file.name || '');
+    }
+
     // Thêm / xóa dòng size
     (function () {
         var wrap = document.getElementById('sizeRows');
@@ -221,7 +243,7 @@
                 return;
             }
             img.onload = function () { img.style.display = 'block'; txt.style.display = 'none'; };
-            img.onerror = function () { img.style.display = 'none'; txt.style.display = ''; txt.textContent = 'Không tải được ảnh: ' + src; };
+            img.onerror = function () { img.style.display = 'none'; txt.style.display = ''; txt.textContent = 'Không xem trước được ảnh (trình duyệt không hiển thị được loại ảnh này): ' + src; };
             img.src = src;
         }
 
@@ -238,8 +260,8 @@
             var file = fileInput.files[0];
             if (!file) return;
 
-            if (!/^image\/(png|jpe?g|webp|gif)$/i.test(file.type)) {
-                setMsg('Vui lòng chọn file ảnh JPG, PNG, WEBP hoặc GIF.', 'err');
+            if (!isImageFile(file)) {
+                setMsg('File này không phải file ảnh, vui lòng chọn file ảnh khác.', 'err');
                 fileInput.value = '';
                 return;
             }
@@ -422,7 +444,7 @@
             }
 
             var valid = files.filter(function (f) {
-                if (!/^image\/(png|jpe?g|webp|gif)$/i.test(f.type)) { notes.push('"' + f.name + '" không phải JPG, PNG, WEBP hoặc GIF.'); return false; }
+                if (!isImageFile(f)) { notes.push('"' + f.name + '" không phải file ảnh.'); return false; }
                 if (f.size > MAX_SIZE) { notes.push('"' + f.name + '" quá lớn (tối đa 5MB).'); return false; }
                 return true;
             });
@@ -467,5 +489,5 @@
         refresh();
     })();
 </script>
-
+<script src="${ctx}/static/assets/js/custom-select.js"></script>
 <%@ include file="../layouts/admin-footer.jsp" %>

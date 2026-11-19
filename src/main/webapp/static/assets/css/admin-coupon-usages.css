@@ -1,0 +1,6 @@
+/* Trang lượt dùng coupon (admin/discount/coupon-usages.jsp) */
+.dc-code {
+    font-family: monospace;
+    font-weight: 700;
+    letter-spacing: .5px;
+}

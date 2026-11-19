@@ -1,0 +1,320 @@
+/* Form cấp voucher (admin/discount/voucher-form.jsp) */
+
+.top {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 22px;
+}
+
+.btn-add {
+    position: relative;
+    height: 44px;
+    padding: 0 24px;
+    border: none;
+    border-radius: 999px;
+    background: var(--orange);
+    color: #fff;
+    font-weight: 800;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 10px 22px rgba(247, 148, 29, .3);
+    transition: background .15s, transform .18s, box-shadow .18s;
+}
+
+.btn-add:hover {
+    background: var(--orange-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 14px 28px rgba(247, 148, 29, .4);
+}
+
+.btn-add:active {
+    transform: translateY(0) scale(.97);
+    box-shadow: none;
+}
+
+.btn-edit {
+    height: 44px;
+    padding: 0 20px;
+    border-radius: 999px;
+    border: 1.5px solid var(--cream-border);
+    background: #fff;
+    color: var(--head);
+    font-weight: 700;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    transition: background .15s, border-color .15s, transform .18s, box-shadow .18s;
+}
+
+.btn-edit:hover {
+    background: var(--cream);
+    border-color: var(--orange);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, .1);
+}
+
+.btn-edit:active {
+    transform: translateY(0) scale(.97);
+    box-shadow: none;
+}
+
+button.btn-edit,
+button.btn-add {
+    font: inherit;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+/* ----- Form ----- */
+.dc-card {
+    padding: 26px;
+}
+
+.dc-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 18px;
+}
+
+.dc-f {
+    grid-column: span 4;
+}
+
+.dc-f.w3 {
+    grid-column: span 3;
+}
+
+.dc-f.w6 {
+    grid-column: span 6;
+}
+
+.dc-f.w8 {
+    grid-column: span 8;
+}
+
+.dc-f.w12 {
+    grid-column: span 12;
+}
+
+.dc-f label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #444;
+    transition: color .2s;
+}
+
+.dc-f:focus-within label {
+    color: var(--orange-dark);
+}
+
+.dc-f input[type=text],
+.dc-f input[type=datetime-local],
+.dc-f select {
+    width: 100%;
+    height: 42px;
+    padding: 0 12px;
+    border: 1px solid #E5D9C6;
+    background: #fff;
+    font: inherit;
+    color: #222;
+    transition: border-color .25s, box-shadow .25s;
+}
+
+.dc-f input:hover,
+.dc-f select:hover {
+    border-color: #d8c6a8;
+}
+
+.dc-f input:focus,
+.dc-f select:focus {
+    outline: none;
+    border-color: var(--orange);
+    box-shadow: 0 0 0 4px rgba(247, 148, 29, .18);
+}
+
+.dc-f input[readonly] {
+    background: #F6F2EA;
+    color: #777;
+}
+
+.dc-f small {
+    display: block;
+    margin-top: 5px;
+    font-size: 12px;
+    color: #8a8a8a;
+    opacity: .8;
+    transition: opacity .2s;
+}
+
+.dc-f:focus-within small {
+    opacity: 1;
+}
+
+.dc-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 42px;
+}
+
+.dc-check input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--orange);
+    cursor: pointer;
+}
+
+.dc-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 26px;
+}
+
+@media (max-width: 900px) {
+
+    .dc-f,
+    .dc-f.w3,
+    .dc-f.w6,
+    .dc-f.w8 {
+        grid-column: span 12;
+    }
+}
+
+/* ================= HIỆU ỨNG ================= */
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-16px);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.top {
+    animation: fadeUp .45s ease backwards;
+}
+
+.alert {
+    animation: slideIn .4s ease backwards;
+}
+
+.dc-card {
+    animation: fadeUp .5s .1s ease backwards;
+}
+
+.dc-f {
+    animation: fadeUp .45s ease backwards;
+}
+
+.dc-f:nth-child(1) {
+    animation-delay: .15s;
+}
+
+.dc-f:nth-child(2) {
+    animation-delay: .20s;
+}
+
+.dc-f:nth-child(3) {
+    animation-delay: .25s;
+}
+
+.dc-f:nth-child(4) {
+    animation-delay: .30s;
+}
+
+.dc-f:nth-child(5) {
+    animation-delay: .35s;
+}
+
+.dc-f:nth-child(6) {
+    animation-delay: .40s;
+}
+
+.dc-f:nth-child(7) {
+    animation-delay: .45s;
+}
+
+.dc-f:nth-child(8) {
+    animation-delay: .50s;
+}
+
+.dc-f:nth-child(9) {
+    animation-delay: .55s;
+}
+
+.dc-f:nth-child(10) {
+    animation-delay: .60s;
+}
+
+.dc-f:nth-child(n+11) {
+    animation-delay: .65s;
+}
+
+.dc-actions {
+    animation: fadeUp .45s .7s ease backwards;
+}
+
+/* Ô "Giảm tối đa" hiện ra ngay (không bị delay) khi đổi loại giảm */
+.dc-f.pop-in {
+    animation: fadeUp .35s ease backwards;
+}
+
+/* Nút đang gửi */
+.btn-add.loading {
+    pointer-events: none;
+    opacity: .85;
+    color: transparent !important;
+}
+
+.btn-add.loading::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 18px;
+    height: 18px;
+    margin: -9px 0 0 -9px;
+    border: 2px solid rgba(255, 255, 255, .45);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation: none !important;
+        transition: none !important;
+    }
+}

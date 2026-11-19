@@ -1,0 +1,484 @@
+/* =====================================================================
+   checkout.css - Trang thanh toán PolySneaker (đứng riêng, không header/footer web)
+   Bố cục 2 cột: trái = thông tin, phải = tóm tắt đơn hàng (nền khác màu).
+   Tự chứa biến màu, không phụ thuộc main.css.
+   Đặt tại: /static/assets/css/checkout.css
+   ===================================================================== */
+
+:root {
+    --orange: #F7941D;
+    --orange-dark: #E8830C;
+    --head: #6E3A12;
+    --text: #333;
+    --muted: #707070;
+    --line: #D9D9D9;
+    --soft-line: #E8E2D6;
+    --panel: #FAF6EE;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body.co-body {
+    margin: 0;
+    font-family: 'Nunito Sans', Arial, sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    background: #fff;
+    -webkit-font-smoothing: antialiased;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* ===== Thanh trên cùng: logo giữa, túi bên phải ===== */
+.co-top {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 72px;
+    border-bottom: 1px solid var(--soft-line);
+    background: #fff;
+}
+
+.co-brand {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: .3px;
+    color: var(--head);
+}
+
+.co-brand b {
+    color: var(--orange);
+    font-weight: 800;
+}
+
+.co-bag {
+    position: absolute;
+    right: 28px;
+    top: 50%;
+    width: 40px;
+    height: 40px;
+    margin-top: -20px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    color: var(--head);
+    transition: background .15s, color .15s;
+}
+
+.co-bag:hover {
+    background: #FFF3DE;
+    color: var(--orange);
+}
+
+/* ===== Bố cục 2 cột ===== */
+.co-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    min-height: calc(100vh - 73px);
+}
+
+.co-main {
+    padding: 36px 48px 64px;
+}
+
+.co-col {
+    max-width: 520px;
+    margin-left: auto;
+}
+
+.co-sum {
+    padding: 36px 48px 64px;
+    background: var(--panel);
+    border-left: 1px solid var(--soft-line);
+}
+
+.co-sum-in {
+    position: sticky;
+    top: 28px;
+    max-width: 420px;
+}
+
+/* ===== Thông báo lỗi ===== */
+.co-alert {
+    margin-bottom: 22px;
+    padding: 13px 16px;
+    border-radius: 6px;
+    font-size: 13.5px;
+    font-weight: 700;
+    line-height: 1.5;
+}
+
+.co-alert.err {
+    background: #FFF1EB;
+    border: 1px solid #F8CDB8;
+    color: #C2410C;
+}
+
+/* ===== Tiêu đề từng phần ===== */
+.co-h {
+    margin: 0 0 14px;
+    font-size: 19px;
+    font-weight: 800;
+    color: var(--head);
+}
+
+.co-h:not(:first-of-type),
+.co-col > .co-grid + .co-h {
+    margin-top: 34px;
+}
+
+.co-sub {
+    margin: -8px 0 14px;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+/* ===== Ô nhập (nhãn nổi lên khi gõ) ===== */
+.co-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.co-f {
+    position: relative;
+    min-width: 0;
+}
+
+.co-f.full {
+    grid-column: 1 / -1;
+}
+
+.co-f input {
+    width: 100%;
+    height: 52px;
+    padding: 20px 14px 6px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: #fff;
+    font-family: inherit;
+    font-size: 14.5px;
+    color: var(--text);
+    caret-color: var(--orange);
+    outline: none;
+    transition: border-color .15s, box-shadow .2s;
+}
+
+.co-f input:hover {
+    border-color: #BDBDBD;
+}
+
+.co-f input:focus {
+    border-color: var(--orange);
+    box-shadow: 0 0 0 3px rgba(247, 148, 29, .15);
+}
+
+.co-f input:not(:placeholder-shown):invalid {
+    border-color: #E58A5C;
+}
+
+.co-f label {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    max-width: calc(100% - 30px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 14px;
+    color: var(--muted);
+    pointer-events: none;
+    transition: top .15s, transform .15s, font-size .15s;
+}
+
+.co-f input:focus + label,
+.co-f input:not(:placeholder-shown) + label {
+    top: 10px;
+    transform: none;
+    font-size: 11.5px;
+}
+
+/* ===== Phương thức thanh toán ===== */
+.co-opt {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px 18px;
+    border: 1.5px solid var(--orange);
+    border-radius: 6px;
+    background: #FFF9EE;
+    cursor: default;
+}
+
+.co-opt input {
+    flex-shrink: 0;
+    width: 17px;
+    height: 17px;
+    margin: 2px 0 0;
+    accent-color: var(--orange);
+}
+
+.co-opt span {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.co-opt b {
+    font-size: 14.5px;
+    font-weight: 800;
+    color: var(--head);
+}
+
+.co-opt small {
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--muted);
+}
+
+/* ===== Nút đặt hàng ===== */
+.co-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 54px;
+    margin-top: 28px;
+    border: none;
+    border-radius: 6px;
+    background: var(--orange);
+    color: #fff;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: .3px;
+    cursor: pointer;
+    transition: background .15s;
+}
+
+.co-btn:hover {
+    background: var(--orange-dark);
+}
+
+.co-btn:focus-visible,
+.co-back:focus-visible,
+.co-bag:focus-visible {
+    outline: 3px solid var(--orange);
+    outline-offset: 3px;
+}
+
+.co-btn:disabled {
+    background: #F3C77A;
+    cursor: wait;
+}
+
+.co-back {
+    display: inline-block;
+    margin-top: 18px;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--head);
+}
+
+.co-back:hover {
+    color: var(--orange);
+}
+
+/* ===== Cột phải: danh sách sản phẩm ===== */
+.co-line {
+    display: grid;
+    grid-template-columns: 64px 1fr auto;
+    gap: 14px;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.co-thumb {
+    position: relative;
+    width: 64px;
+    height: 64px;
+    border: 1px solid var(--soft-line);
+    border-radius: 8px;
+    background: #fff;
+}
+
+.co-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+/* chấm tròn số lượng ở góc ảnh */
+.co-qty {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: var(--head);
+    color: #fff;
+    font-style: normal;
+    font-size: 12px;
+    font-weight: 700;
+    display: grid;
+    place-items: center;
+}
+
+.co-lname {
+    min-width: 0;
+}
+
+.co-lname b {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.35;
+    color: var(--text);
+}
+
+.co-lname small {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.co-lprice {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+}
+
+/* ===== Mã giảm giá (nội dung do discount-box.jsp dựng) ===== */
+.co-disc {
+    margin: 22px 0 20px;
+}
+
+.co-disc input[type="text"],
+.co-disc input:not([type]) {
+    height: 46px;
+    padding: 0 14px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: #fff;
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+}
+
+.co-disc input[type="text"]:focus {
+    border-color: var(--orange);
+    box-shadow: 0 0 0 3px rgba(247, 148, 29, .15);
+}
+
+.co-disc button {
+    height: 46px;
+    padding: 0 18px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: #fff;
+    color: var(--head);
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .15s;
+}
+
+.co-disc button:hover {
+    background: #FFF3DE;
+}
+
+/* ===== Tạm tính ===== */
+.co-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 14px;
+}
+
+.co-row.total {
+    padding-top: 6px;
+}
+
+.co-row.total > span {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--head);
+}
+
+.co-row.total > b {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+}
+
+.co-note {
+    margin: 12px 0 0;
+    font-size: 12px;
+    line-height: 1.55;
+    color: var(--muted);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 900px) {
+    .co-layout {
+        grid-template-columns: 1fr;
+        min-height: 0;
+    }
+
+    /* màn hình nhỏ: tóm tắt đơn lên trên để khách thấy mình đang mua gì */
+    .co-sum {
+        order: -1;
+        padding: 24px 20px;
+        border-left: none;
+        border-bottom: 1px solid var(--soft-line);
+    }
+
+    .co-sum-in {
+        position: static;
+        max-width: none;
+    }
+
+    .co-main {
+        padding: 28px 20px 48px;
+    }
+
+    .co-col {
+        max-width: none;
+    }
+
+    .co-bag {
+        right: 12px;
+    }
+}
+
+@media (max-width: 520px) {
+    .co-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .co-f input,
+    .co-f label,
+    .co-btn,
+    .co-bag {
+        transition: none;
+    }
+}
+input[readonly] {
+    background: #f6f3ee;
+    cursor: not-allowed;
+}

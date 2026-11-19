@@ -3,6 +3,7 @@
    ===================================================== */
 (function () {
     /* ---------- Thư viện ảnh ---------- */
+
     var thumbs = Array.prototype.slice.call(document.querySelectorAll('.pd-thumb'));
     var list = document.getElementById('pdThumbList');
     var mainBox = document.getElementById('pdMainBox');
@@ -181,4 +182,138 @@
             window.location.href = card.getAttribute('data-href');
         });
     });
+})();
+
+
+/* =====================================================
+   MÔ TẢ SẢN PHẨM - phong cách tạp chí
+   ===================================================== */
+(function () {
+    var sec = document.getElementById('pdDescSec');
+    if (!sec) return;
+
+    /* Hiện khi cuộn tới */
+    if ('IntersectionObserver' in window) {
+        var io = new IntersectionObserver(function (es) {
+            es.forEach(function (e) {
+                if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+            });
+        }, { threshold: 0.12 });
+        io.observe(sec);
+    } else {
+        sec.classList.add('in');
+    }
+
+    /* Chữ nền trôi nhẹ khi cuộn (parallax) */
+    var ghost = document.getElementById('pdGhost');
+    var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (ghost && !reduce) {
+        var ticking = false;
+        window.addEventListener('scroll', function () {
+            if (ticking) return;
+            ticking = true;
+            requestAnimationFrame(function () {
+                var r = sec.getBoundingClientRect();
+                var p = (window.innerHeight - r.top) / (window.innerHeight + r.height);
+                p = Math.max(0, Math.min(1, p));
+                ghost.style.transform = 'translateX(' + ((0.5 - p) * 120) + 'px)';
+                ticking = false;
+            });
+        }, { passive: true });
+    }
+
+    var raw   = document.getElementById('pdDescRaw');
+    var body  = document.getElementById('pdDescBody');
+    var lead  = document.getElementById('pdLead');
+    var specs = document.getElementById('pdSpecs');
+    var paras = document.getElementById('pdParas');
+    var btn   = document.getElementById('pdDescToggle');
+    if (!raw || !body) return;
+
+    /* Tách mô tả: dòng bắt đầu bằng - • * => thông số; còn lại => văn bản */
+    var lines = raw.textContent.replace(/\r/g, '').split('\n');
+    var textLines = [], items = [];
+
+    lines.forEach(function (ln) {
+        var t = ln.trim();
+        if (!t) return;
+        var m = t.match(/^[-•*–]\s*(.+)$/);
+        if (m) {
+            var kv = m[1].match(/^([^:]{2,28}):\s*(.+)$/);
+            items.push(kv ? { k: kv[1], v: kv[2] } : { k: '', v: m[1] });
+        } else {
+            textLines.push(t);
+        }
+    });
+
+    /* Câu dẫn = dòng chữ đầu tiên */
+    if (textLines.length) lead.textContent = textLines.shift();
+    else lead.style.display = 'none';
+
+    /* Bảng thông số đánh số */
+    if (items.length) {
+        items.forEach(function (it, i) {
+            var row = document.createElement('div');
+            row.className = 'pd-spec';
+            row.style.setProperty('--i', i);
+
+            var n = document.createElement('em');
+            n.textContent = (i + 1 < 10 ? '0' : '') + (i + 1);
+            row.appendChild(n);
+
+            if (it.k) {
+                var k = document.createElement('b');
+                k.textContent = it.k;
+                row.appendChild(k);
+            } else {
+                row.classList.add('nokey');
+            }
+            var v = document.createElement('span');
+            v.textContent = it.v;
+            row.appendChild(v);
+            specs.appendChild(row);
+        });
+    } else {
+        specs.style.display = 'none';
+    }
+
+    /* Các đoạn còn lại */
+    if (textLines.length) {
+        textLines.forEach(function (t, i) {
+            var p = document.createElement('p');
+            p.style.setProperty('--i', i);
+            p.textContent = t;
+            paras.appendChild(p);
+        });
+    } else {
+        paras.style.display = 'none';
+    }
+
+    raw.style.display = 'none';
+    body.classList.add('ready');
+
+    /* Xem thêm / Thu gọn */
+    var LIMIT = 340;   // px, chiều cao khi thu gọn
+
+    function setup() {
+        if (body.classList.contains('open')) return;
+        if (body.scrollHeight > LIMIT + 60) {
+            body.classList.add('clamp');
+            body.style.maxHeight = LIMIT + 'px';
+            btn.hidden = false;
+        }
+    }
+
+    btn.addEventListener('click', function () {
+        var open = !body.classList.contains('open');
+        body.classList.toggle('open', open);
+        body.classList.toggle('clamp', !open);
+        body.style.maxHeight = open ? body.scrollHeight + 'px' : LIMIT + 'px';
+        btn.classList.toggle('open', open);
+        btn.querySelector('.pd-more-txt').textContent = open ? 'Thu gọn' : 'Xem thêm';
+        if (!open) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    setup();
+    window.addEventListener('load', setup);
 })();

@@ -1,0 +1,109 @@
+/* Khung nhập mã giảm giá ở checkout (views/discount-box.jsp) */
+.dbox {
+    --o: #F7941D;
+    --head: #6E3A12;
+    --brown: #5C4430;
+    --muted: #9A8C7E;
+    margin: 0 0 18px;
+    padding: 16px 18px;
+    border: 1.5px dashed #F2D9A8;
+    background: #FFFDF8;
+    color: var(--brown);
+}
+
+.dbox *,
+.dbox *::before,
+.dbox *::after {
+    box-sizing: border-box;
+    border-radius: 0 !important;
+}
+
+.dbox-title {
+    margin: 0 0 10px;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: .6px;
+    text-transform: uppercase;
+    color: var(--head);
+}
+
+.dbox-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 10px;
+}
+
+.dbox input {
+    width: 100%;
+    height: 44px;
+    padding: 0 12px;
+    border: 1.5px solid #E8DAC2;
+    background: #fff;
+    font: inherit;
+    text-transform: uppercase;
+    color: var(--head);
+}
+
+.dbox input:focus {
+    outline: none;
+    border-color: var(--o);
+}
+
+.dbox input::placeholder {
+    text-transform: none;
+    color: var(--muted);
+}
+
+.dbox-btn {
+    height: 44px;
+    padding: 0 24px;
+    border: 0;
+    cursor: pointer;
+    background: var(--o);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: background .25s;
+}
+
+.dbox-btn:hover {
+    background: var(--head);
+}
+
+.dbox-btn[disabled] {
+    opacity: .6;
+    cursor: wait;
+}
+
+.dbox-result {
+    min-height: 20px;
+    margin-top: 10px;
+    font-size: 13.5px;
+    font-weight: 600;
+}
+
+.dbox-result.ok {
+    color: #1E8A4C;
+}
+
+.dbox-result.err {
+    color: #C62828;
+}
+
+.dbox-link {
+    margin-top: 4px;
+    font-size: 13px;
+}
+
+.dbox-link a {
+    color: var(--am, #D97706);
+    text-decoration: underline;
+}
+
+@media (max-width: 560px) {
+    .dbox-row {
+        grid-template-columns: 1fr;
+    }
+}
