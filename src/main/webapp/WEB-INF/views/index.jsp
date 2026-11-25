@@ -7,66 +7,8 @@
 <c:set var="activeMenu" value="home" scope="request"/>
 <jsp:include page="/WEB-INF/views/layouts/header.jsp"/>
 
-    <!-- ===== 1. HERO ===== -->
-    <section class="hero-card">
-        <div class="hero-left">
-            <div class="hero-badges">
-                <span class="dot"></span>
-                <span class="txt">Phong cách tối giản Châu Á</span>
-                <span class="new">NEW 2025</span>
-            </div>
-
-            <h1 class="hero-title">
-                Nâng Niu <span class="hl">Từng Bước Chân</span><br>
-                Nhẹ Nhàng &amp; Tinh Tế
-            </h1>
-
-            <p class="hero-desc">
-                BST Giày Sneaker phong cách Nhật – Hàn: Thoáng khí, êm ái, mang lại vẻ đẹp thanh lịch thuần khiết cho mỗi ngày năng động.
-            </p>
-
-            <div class="hero-cta">
-                <a href="${ctx}/shop" class="btn-primary">
-                    Khám phá bộ sưu tập
-                    <svg width="16" height="16"><use href="#ic-arrow"/></svg>
-                </a>
-                <a href="${ctx}/lookbooks" class="btn-soft">
-                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                    Xem LookBook
-                </a>
-            </div>
-
-            <div class="hero-stats">
-                <div>
-                    <div class="num">500+</div>
-                    <div class="cap">Mẫu Giày Tinh Tế</div>
-                </div>
-                <div>
-                    <div class="num o">100%</div>
-                    <div class="cap">Chính Hãng Ủy Quyền</div>
-                </div>
-                <div>
-                    <div class="num">4.9 / 5</div>
-                    <div class="cap">Hài Lòng Từ Khách<br>Hàng</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="hero-visual">
-            <div class="hv-top">
-                <span class="hv-tag w">Bản Giới Hạn #Spring25</span>
-                <span class="hv-tag y">Tiết kiệm 850.000đ</span>
-            </div>
-            <div class="hv-img media">
-                <svg class="ph"><use href="#ic-shoe"/></svg>
-                <img src="${ctx}/static/assets/images/Banner_QuangCao_Giay.png" alt="Poly Amber Soft Runner" onerror="this.style.display='none'">
-            </div>
-            <div class="hv-bottom">
-                <span class="hv-name">Poly Amber Soft Runner</span>
-                <span class="hv-dots"><i class="on"></i><i></i><i></i></span>
-            </div>
-        </div>
-    </section>
+    <!-- ===== 1. HERO BANNER ĐỘNG (file riêng: /WEB-INF/views/layouts/hero-banner.jsp) ===== -->
+    <jsp:include page="/WEB-INF/views/layouts/hero-banner.jsp"/>
 
     <!-- ===== 2. SẢN PHẨM (lấy từ database) ===== -->
     <section class="sec" id="flash">
