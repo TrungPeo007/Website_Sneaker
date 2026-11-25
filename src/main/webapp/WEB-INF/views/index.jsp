@@ -7,7 +7,7 @@
 <c:set var="activeMenu" value="home" scope="request"/>
 <jsp:include page="/WEB-INF/views/layouts/header.jsp"/>
 
-    <!-- ===== 1. HERO BANNER ĐỘNG (file riêng: /WEB-INF/views/layouts/hero-banner.jsp) ===== -->
+    <!-- ===== 1. HERO XOAY GIÀY THEO CUỘN (file riêng: /WEB-INF/views/layouts/hero-banner.jsp) ===== -->
     <jsp:include page="/WEB-INF/views/layouts/hero-banner.jsp"/>
 
     <!-- ===== 2. SẢN PHẨM (lấy từ database) ===== -->
