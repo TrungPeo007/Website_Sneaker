@@ -1,5 +1,5 @@
 /* =====================================================================
-   POLY_SNEAKER - FULL DATABASE SCRIPT v9 (SQL Server 2016 SP1+)
+   POLY_SNEAKER - FULL DATABASE SCRIPT v10 (SQL Server 2016 SP1+)
    - Safe to re-run: tables are created only if missing, so existing
      accounts / products / orders / pages are NEVER dropped.
    - Seed data is idempotent (no duplicates when run again).
@@ -40,6 +40,10 @@
        - Đơn cũ đã COMPLETED được đánh dấu PAID để không bị trừ kho lần nữa.
        - vw_OrderSummary thêm PaymentStatus, PaidAt, Note, DiscountAmount, CouponCode, VoucherCode.
 
+   v10: BLOG (Bài viết) - chỉ THÊM, không đổi chức năng cũ
+       - dbo.Blogs : bài viết do admin đăng, khách xem ở /blog/<slug>
+       - IsPublished = 0 là bản nháp (chỉ admin thấy)
+
    Default logins after running:
      admin       / admin123      (plain text on purpose, owner-only account)
      customer01  / customer123   (BCrypt hash)
@@ -71,6 +75,7 @@ IF OBJECT_ID('dbo.vw_LookbookDetail', 'V')      IS NOT NULL DROP VIEW dbo.vw_Loo
 IF OBJECT_ID('dbo.vw_BestSellingProducts', 'V') IS NOT NULL DROP VIEW dbo.vw_BestSellingProducts;
 IF OBJECT_ID('dbo.vw_ProductCards', 'V')        IS NOT NULL DROP VIEW dbo.vw_ProductCards;
 IF OBJECT_ID('dbo.sp_RegisterAccount', 'P')     IS NOT NULL DROP PROCEDURE dbo.sp_RegisterAccount;
+IF OBJECT_ID('dbo.Blogs', 'U')                  IS NOT NULL DROP TABLE dbo.Blogs;
 IF OBJECT_ID('dbo.CouponUsages', 'U')           IS NOT NULL DROP TABLE dbo.CouponUsages;
 IF OBJECT_ID('dbo.Vouchers', 'U')               IS NOT NULL DROP TABLE dbo.Vouchers;
 IF OBJECT_ID('dbo.Coupons', 'U')                IS NOT NULL DROP TABLE dbo.Coupons;
@@ -730,6 +735,28 @@ IF NOT EXISTS (SELECT 1 FROM sys.check_constraints
 GO
 
 /* =====================================================
+   10g. BLOG - Bài viết (v10)
+   - Slug        : đường dẫn công khai /blog/<slug> (không trùng)
+   - IsPublished : 1 = hiện ra trang khách, 0 = nháp (chỉ admin thấy)
+   ===================================================== */
+IF OBJECT_ID('dbo.Blogs', 'U') IS NULL
+CREATE TABLE dbo.Blogs (
+    BlogId       INT IDENTITY(1,1) PRIMARY KEY,
+    Title        NVARCHAR(200)  NOT NULL,
+    Slug         VARCHAR(220)   NOT NULL,
+    Summary      NVARCHAR(500)  NULL,              -- mô tả ngắn hiện ở danh sách
+    Content      NVARCHAR(MAX)  NULL,
+    ThumbnailUrl NVARCHAR(500)  NULL,
+    Author       NVARCHAR(100)  NULL,
+    IsPublished  BIT            NOT NULL DEFAULT 1,
+    CreatedAt    DATETIME       NOT NULL DEFAULT GETDATE(),
+    UpdatedAt    DATETIME       NULL,
+
+    CONSTRAINT UQ_Blogs_Slug UNIQUE (Slug)
+);
+GO
+
+/* =====================================================
    11. INDEXES
    ===================================================== */
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_Categories_ParentId' AND object_id = OBJECT_ID('dbo.Categories'))
@@ -792,6 +819,9 @@ IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_Vouchers_Account' AND 
 -- v9
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_Orders_Payment' AND object_id = OBJECT_ID('dbo.Orders'))
     CREATE INDEX IX_Orders_Payment ON dbo.Orders(PaymentStatus, Status, CreatedAt DESC);
+-- v10
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_Blogs_Published' AND object_id = OBJECT_ID('dbo.Blogs'))
+    CREATE INDEX IX_Blogs_Published ON dbo.Blogs(IsPublished, CreatedAt DESC);
 GO
 
 /* =====================================================
@@ -1265,7 +1295,8 @@ UNION ALL SELECT 'StockReceiptDetails', COUNT(*) FROM dbo.StockReceiptDetails
 UNION ALL SELECT 'StockMovements',      COUNT(*) FROM dbo.StockMovements
 UNION ALL SELECT 'Coupons',             COUNT(*) FROM dbo.Coupons
 UNION ALL SELECT 'CouponUsages',        COUNT(*) FROM dbo.CouponUsages
-UNION ALL SELECT 'Vouchers',            COUNT(*) FROM dbo.Vouchers;
+UNION ALL SELECT 'Vouchers',            COUNT(*) FROM dbo.Vouchers
+UNION ALL SELECT 'Blogs',               COUNT(*) FROM dbo.Blogs;
 
 SELECT * FROM dbo.vw_ProductCards;
 SELECT TOP 5 * FROM dbo.vw_BestSellingProducts ORDER BY TotalSold DESC;
@@ -1277,6 +1308,7 @@ SELECT TOP 50 * FROM dbo.vw_StockMovementDetail ORDER BY CreatedAt DESC;
 SELECT * FROM dbo.vw_CouponSummary ORDER BY CreatedAt DESC;
 SELECT * FROM dbo.vw_VoucherDetail ORDER BY CreatedAt DESC;
 SELECT TOP 50 OrderId, Username, Status, PaymentMethod, PaymentStatus, PaidAt, TotalAmount, CreatedAt FROM dbo.vw_OrderSummary ORDER BY CreatedAt DESC;
+SELECT BlogId, Title, Slug, IsPublished, CreatedAt FROM dbo.Blogs ORDER BY CreatedAt DESC;
 SELECT AccountId, Username, Email, Role, BranchId, ManagerId, IsActive, CreatedAt FROM dbo.Accounts ORDER BY AccountId;
 SELECT PageId, Slug, Title, FooterGroup, SortOrder, IsActive FROM dbo.SitePages ORDER BY FooterGroup DESC, SortOrder;
 GO

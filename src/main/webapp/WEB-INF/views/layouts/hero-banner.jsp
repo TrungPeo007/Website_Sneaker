@@ -41,46 +41,38 @@ html { overflow-x: clip; }
         var(--ink);
 }
 
-/* ---------- Đôi giày xếp lớp ---------- */
+/* ---------- Ảnh giày thật ---------- */
 .spn-shoe {
     position: absolute;
     left: 68%;                       /* JS đổi vị trí ngang theo từng mặt */
     top: 50%;
-    width: min(640px, 76vw);
-    aspect-ratio: 2 / 1;
-    transform: translate(-50%, -54%);
+    width: min(700px, 52vw);
+    aspect-ratio: 952 / 503;         /* tỉ lệ ảnh shoe-right.png (rộng / cao); đổi nếu ảnh của anh khác tỉ lệ */
+    transform: translate(-50%, -50%);
     perspective: 1600px;
     z-index: 2;
 }
 
-.spn-3d {
+.spn-img {
     position: absolute;
     inset: 0;
-    transform-style: preserve-3d;
-    will-change: transform;
-}
-
-.spn-layer {
-    position: absolute;
-    inset: 0;
-}
-
-.spn-layer svg {
-    display: block;
     width: 100%;
     height: 100%;
-    overflow: visible;
+    object-fit: contain;
+    user-select: none;
+    -webkit-user-drag: none;
+    will-change: transform, filter;
 }
 
 .spn-floor {
     position: absolute;
-    left: 8%;
-    right: 8%;
-    bottom: 2%;
-    height: 34px;
+    left: 6%;
+    right: 6%;
+    bottom: -2%;
+    height: 36px;
     border-radius: 50%;
     background: radial-gradient(ellipse at center, rgba(0, 0, 0, .8), transparent 70%);
-    filter: blur(5px);
+    filter: blur(6px);
     will-change: transform;
 }
 
@@ -320,99 +312,14 @@ html { overflow-x: clip; }
 }
 </style>
 
-<%-- ===== Bản vẽ đôi giày (SVG): dùng chung cho mọi lớp ===== --%>
-<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
-    <defs>
-        <linearGradient id="spnUp" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#FFFBF3"/><stop offset="1" stop-color="#E4D8C4"/>
-        </linearGradient>
-        <linearGradient id="spnMid" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#E6DFD2"/>
-        </linearGradient>
-        <linearGradient id="spnOr" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#FFB04A"/><stop offset="1" stop-color="#E8780C"/>
-        </linearGradient>
-        <linearGradient id="spnDark" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#4a3d35"/><stop offset="1" stop-color="#241c17"/>
-        </linearGradient>
-        <linearGradient id="spnAO" x1="0" y1="1" x2="0" y2="0">
-        <stop offset="0" stop-color="#000" stop-opacity=".38"/><stop offset=".22" stop-color="#000" stop-opacity="0"/>
-        </linearGradient>
-        <linearGradient id="spnHi" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".25" stop-color="#fff" stop-opacity="0"/>
-        </linearGradient>
-        <pattern id="spnMesh" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-        <circle cx="4" cy="4" r="1.15" fill="#5b3a1a" fill-opacity=".28"/>
-        </pattern>
-
-        <path id="spnUpper" d="M64 268 C54 224 58 184 72 154 C82 136 106 130 128 138 C156 148 176 172 200 180 C220 186 232 150 244 116 C251 96 272 88 286 100 L330 158 C396 168 462 174 522 182 C618 194 708 206 738 232 C752 244 754 264 750 274 L64 274 Z"/>
-        <path id="spnMidP" d="M58 268 C54 298 66 324 100 332 C140 340 200 340 240 340 L540 334 C630 332 712 318 752 290 C762 282 758 274 748 270 C700 264 600 264 540 270 L100 270 C80 270 66 268 58 268 Z"/>
-        <path id="spnOut" d="M72 330 C86 338 112 344 150 346 L540 342 C640 340 722 322 754 292 C752 312 716 336 650 346 C620 350 580 352 540 352 L150 352 C104 352 76 346 72 330 Z"/>
-        <clipPath id="spnCu"><use href="#spnUpper"/></clipPath>
-        <clipPath id="spnCm"><use href="#spnMidP"/></clipPath>
-        <%-- Lớp ruột (chỉ có màu, tạo độ dày cho giày) --%>
-        <g id="spnSil" transform="translate(0,-10)">
-            <use href="#spnOut" fill="#1f1815"/>
-            <use href="#spnMidP" fill="#D3CBBD"/>
-            <use href="#spnUpper" fill="#C2701F"/>
-        </g>
-        <g id="spnArt" transform="translate(0,-10)">
-        <!-- outsole -->
-        <use href="#spnOut" fill="#1f1815"/>
-        <!-- midsole -->
-        <use href="#spnMidP" fill="url(#spnMid)" stroke="#000" stroke-opacity=".28" stroke-width="1.6"/>
-        <g clip-path="url(#spnCm)">
-        <!-- heel air window -->
-        <rect x="84" y="290" width="140" height="34" rx="17" fill="url(#spnOr)"/>
-        <rect x="94" y="295" width="120" height="7" rx="3.5" fill="#fff" fill-opacity=".55"/>
-        <!-- midsole line -->
-        <path d="M60 312 C200 316 440 314 760 298" fill="none" stroke="#000" stroke-opacity=".12" stroke-width="3"/>
-        <rect x="0" y="262" width="800" height="14" fill="#000" fill-opacity=".10"/>
-        </g>
-
-        <!-- upper base -->
-        <use href="#spnUpper" fill="url(#spnUp)"/>
-        <g clip-path="url(#spnCu)">
-        <use href="#spnUpper" fill="url(#spnMesh)"/>
-
-        <!-- heel counter -->
-        <path d="M56 280 C48 226 54 180 72 148 C84 170 112 196 142 206 C132 230 128 252 134 280 Z" fill="url(#spnOr)"/>
-        <!-- toe cap -->
-        <path d="M548 184 C640 196 712 210 740 236 L754 280 L574 280 C596 250 586 212 548 184 Z" fill="#EADFCB"/>
-        <path d="M548 184 C586 212 596 250 574 280" fill="none" stroke="#000" stroke-opacity=".18" stroke-width="2" stroke-dasharray="5 4"/>
-        <!-- side stripe -->
-        <path d="M146 268 C250 266 380 238 492 190 L516 200 C400 262 260 292 146 288 Z" fill="url(#spnDark)"/>
-        <path d="M72 154 C82 136 106 130 128 138 C156 148 176 172 200 180 C220 186 232 150 244 116" fill="none" stroke="#2b221c" stroke-width="9" stroke-linecap="round" stroke-opacity=".85"/>
-        <!-- tongue -->
-        <path d="M236 164 C242 120 262 88 284 94 C298 100 308 128 322 158 L338 172 L252 190 Z" fill="url(#spnOr)"/>
-        <path d="M256 112 C264 100 276 98 286 106" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="3" stroke-linecap="round"/>
-        <!-- eyestay -->
-        <path d="M288 98 L332 156 C398 166 464 172 524 180 L520 198 C458 192 392 186 322 178 L272 116 Z" fill="url(#spnDark)" stroke="#000" stroke-opacity=".3" stroke-width="1.2"/>
-        <!-- laces -->
-        <g stroke="#FFF8EA" stroke-width="6.5" stroke-linecap="round">
-        <path d="M300 112 L284 142"/><path d="M326 142 L310 174"/><path d="M362 158 L352 190"/>
-        <path d="M406 164 L398 196"/><path d="M452 170 L448 202"/><path d="M498 176 L496 208"/>
-        </g>
-        <!-- stitching -->
-        <path d="M70 252 C62 214 66 184 78 158" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="2" stroke-dasharray="5 4"/>
-        <!-- shading -->
-        <use href="#spnUpper" fill="url(#spnHi)"/>
-        <use href="#spnUpper" fill="url(#spnAO)"/>
-        </g>
-        <use href="#spnUpper" fill="none" stroke="#000" stroke-opacity=".3" stroke-width="1.6"/>
-        <!-- pull tab -->
-        <path d="M70 156 C58 142 60 122 76 116 L88 128 C80 134 80 142 86 148 Z" fill="url(#spnOr)"/>
-        </g>
-    </defs>
-</svg>
-
 <!-- ===== 1. HERO: CUỘN ĐỂ XOAY GIÀY ===== -->
 <section class="spn" id="spn" aria-label="Giới thiệu giày, cuộn trang để xoay">
     <div class="spn-stage">
 
-        <div class="spn-shoe" id="spnShoe" aria-hidden="true">
+        <div class="spn-shoe" id="spnShoe">
             <div class="spn-floor" id="spnFloor"></div>
-            <div class="spn-3d" id="spn3d"></div>
+            <img class="spn-img" id="spnImgA" src="${ctx}/static/assets/images/shoe-right.png" alt="Giày sneaker" draggable="false">
+            <img class="spn-img" id="spnImgB" alt="" aria-hidden="true" draggable="false" style="visibility:hidden">
         </div>
 
         <%-- Mặt 1: chính diện --%>
@@ -469,33 +376,71 @@ html { overflow-x: clip; }
 
     var stage = root.querySelector('.spn-stage');
     var shoe = document.getElementById('spnShoe');
-    var g3d = document.getElementById('spn3d');
+    var imgA = document.getElementById('spnImgA');
+    var imgB = document.getElementById('spnImgB');
     var floor = document.getElementById('spnFloor');
     var panels = [].slice.call(root.querySelectorAll('.spn-panel'));
     var ticks = [].slice.call(root.querySelectorAll('.spn-tick'));
     var hint = document.getElementById('spnHint');
 
     // ====== CHỈNH Ở ĐÂY ======
-    // Góc xoay quanh trục dọc cho 3 mặt: chéo 3/4 -> mặt phải (nhìn ngang) -> mặt trái (xoay thêm 180°)
-    var ANGLES = [-35, 0, 180];
-    var SHIFT  = [68, 68, 34];     // vị trí ngang của giày (% chiều rộng); mặt trái dạt sang trái nhường chữ bên phải
-    var TILT   = -7;               // nghiêng nhẹ từ trên xuống (độ)
-    var LAYERS = 22;               // số lớp tạo độ dày; GAP là khoảng cách giữa các lớp (px)
-    var GAP    = 5.5;
+    // --- Nguồn ảnh ---
+    // Cách 1 (đơn giản): ảnh giày đã TÁCH NỀN (PNG trong suốt). RIGHT = giày quay mặt phải, LEFT = mặt trái.
+    // Chưa có ảnh mặt trái thì để LEFT = '' , em tự lật ngược ảnh RIGHT để xem thử.
+    var IMG_RIGHT = '${ctx}/static/assets/images/shoe-right.png';
+    var IMG_LEFT  = '';
+    // Cách 2 (mượt nhất): bộ ảnh xoay 360° đã tách nền. Đặt SEQ_COUNT > 0 để dùng, ví dụ 36 ảnh:
+    //   static/assets/images/spin/shoe-000.webp ... shoe-035.webp  (ảnh 000 = giày quay mặt phải, xoay đều cả vòng)
+    var SEQ_DIR = '${ctx}/static/assets/images/spin/shoe-';
+    var SEQ_EXT = 'webp';
+    var SEQ_COUNT = 0;
+
+    // Góc xoay cho 3 mặt: hơi chéo -> mặt phải -> mặt trái (xoay thêm 180°)
+    var ANGLES = [-20, 0, 180];
+    var SHIFT  = [70, 70, 32];     // vị trí ngang của giày (% chiều rộng); mặt trái dạt sang trái nhường chữ bên phải
     // Đoạn cuộn "đứng yên" ở mỗi mặt (0..1); giữa các đoạn là lúc giày xoay
     var HOLDS  = [[0, .14], [.36, .64], [.86, 1]];
     var SMOOTH = .10;              // nhỏ = trễ mượt hơn, lớn = bám sát tay cuộn
     // =========================
 
-    // Dựng các lớp giày: 2 lớp ngoài cùng có đủ chi tiết, lớp giữa chỉ là khối màu
-    var html = '';
-    for (var i = 0; i < LAYERS; i++) {
-        var z = ((i - (LAYERS - 1) / 2) * GAP).toFixed(2);
-        var face = (i === 0 || i === LAYERS - 1) ? '#spnArt' : '#spnSil';
-        html += '<div class="spn-layer" style="transform:translateZ(' + z + 'px)">' +
-                '<svg viewBox="0 0 800 400"><use href="' + face + '"/></svg></div>';
+    // Chuẩn bị ảnh
+    var seqMode = SEQ_COUNT > 0;
+    var seqFrames = [];
+    if (seqMode) {
+        for (var n = 0; n < SEQ_COUNT; n++) {
+            var im = new Image();
+            im.src = SEQ_DIR + ('00' + n).slice(-3) + '.' + SEQ_EXT;
+            seqFrames.push(im.src);
+        }
+        imgA.src = seqFrames[0];
+        imgB.style.display = 'none';
+    } else if (IMG_LEFT) {
+        imgB.src = IMG_LEFT;
+    } else {
+        imgB.src = IMG_RIGHT;      // dùng ảnh phải, lật gương làm mặt trái
     }
-    g3d.innerHTML = html;
+
+    function drawShoe(theta) {
+        floor.style.transform = 'scaleX(' + (.45 + .55 * Math.abs(Math.cos(theta * Math.PI / 180))).toFixed(3) + ')';
+
+        if (seqMode) {
+            var d = ((theta % 360) + 360) % 360;
+            var idx = Math.round(d / 360 * SEQ_COUNT) % SEQ_COUNT;
+            if (imgA.getAttribute('data-i') != idx) { imgA.src = seqFrames[idx]; imgA.setAttribute('data-i', idx); }
+            return;
+        }
+
+        // 2 ảnh: ảnh phải quay dần tới cạnh (90°) rồi ảnh trái quay từ cạnh ra, như một vòng xoay
+        var onB = theta > 90;
+        var local = onB ? theta - 180 : theta;                 // -90..90
+        var dim = 1 - .4 * Math.abs(Math.sin(local * Math.PI / 180));
+        var f = 'drop-shadow(0 30px 40px rgba(0,0,0,.55)) brightness(' + dim.toFixed(3) + ')';
+        var el = onB ? imgB : imgA, other = onB ? imgA : imgB;
+        other.style.visibility = 'hidden';
+        el.style.visibility = 'visible';
+        el.style.filter = f;
+        el.style.transform = (onB && !IMG_LEFT ? 'rotateY(' + local + 'deg) scaleX(-1)' : 'rotateY(' + local + 'deg)');
+    }
 
     function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
     function lerp(a, b, t) { return a + (b - a) * t; }
@@ -533,8 +478,7 @@ html { overflow-x: clip; }
         var theta = mix(ANGLES, k);
         var narrow = window.innerWidth <= 900;
 
-        g3d.style.transform = 'rotateX(' + TILT + 'deg) rotateY(' + theta + 'deg)';
-        floor.style.transform = 'scaleX(' + (.45 + .55 * Math.abs(Math.cos(theta * Math.PI / 180))).toFixed(3) + ')';
+        drawShoe(theta);
 
         var sx = narrow ? 50 : mix(SHIFT, k);
         shoe.style.left = sx + '%';

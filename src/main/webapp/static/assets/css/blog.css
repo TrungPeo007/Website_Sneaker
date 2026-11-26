@@ -1,0 +1,448 @@
+/* Trang blog cho khách: /blog và /blog/{slug}. Không bo góc. */
+.bg-wrap,
+.bg-article-wrap,
+.bg-others {
+    --bg-ink: #201a14;
+    --bg-mute: #7b6f63;
+    --bg-line: #e6dccd;
+    --bg-cream: #fbf6ee;
+    --bg-orange: #f26b1d;
+    --bg-orange-d: #c9510c;
+}
+
+.bg-wrap {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 48px 20px 72px;
+    color: var(--bg-ink);
+}
+
+/* ---------- danh sách ---------- */
+.bg-hero {
+    margin-bottom: 40px;
+    padding-bottom: 22px;
+    border-bottom: 3px solid var(--bg-ink);
+}
+
+.bg-hero h1 {
+    margin: 0 0 8px;
+    font: 700 clamp(34px, 5vw, 56px)/1.05 Georgia, "Times New Roman", serif;
+    letter-spacing: -.01em;
+}
+
+.bg-hero p {
+    margin: 0;
+    max-width: 56ch;
+    color: var(--bg-mute);
+    font-size: 17px;
+}
+
+.bg-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 36px 28px;
+}
+
+.bg-card {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.bg-media {
+    display: block;
+    position: relative;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background: #efe5d6;
+}
+
+.bg-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform .6s cubic-bezier(.2, .7, .2, 1);
+}
+
+.bg-card:hover .bg-media img {
+    transform: scale(1.04);
+}
+
+.bg-media::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 4px;
+    background: var(--bg-orange);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform .35s ease;
+}
+
+.bg-card:hover .bg-media::after {
+    transform: scaleX(1);
+}
+
+.bg-noimg {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    color: var(--bg-orange);
+    font: 700 44px Georgia, serif;
+}
+
+.bg-body {
+    padding-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+}
+
+.bg-meta {
+    margin: 0;
+    font-size: 13px;
+    color: var(--bg-mute);
+}
+
+.bg-card h2 {
+    margin: 0;
+    font: 700 22px/1.3 Georgia, "Times New Roman", serif;
+}
+
+.bg-card h2 a {
+    color: inherit;
+    text-decoration: none;
+    background: linear-gradient(var(--bg-orange), var(--bg-orange)) 0 100% / 0 2px no-repeat;
+    transition: background-size .3s ease;
+}
+
+.bg-card h2 a:hover,
+.bg-card h2 a:focus-visible {
+    background-size: 100% 2px;
+}
+
+.bg-sum {
+    margin: 0;
+    color: #4b4137;
+    line-height: 1.65;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.bg-more {
+    margin-top: auto;
+    padding-top: 4px;
+    color: var(--bg-orange-d);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.bg-more:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+/* bài đầu tiên của trang 1: to, nằm ngang */
+.bg-card.is-feature {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 36px;
+    align-items: center;
+    padding-bottom: 36px;
+    border-bottom: 1px solid var(--bg-line);
+}
+
+.bg-card.is-feature .bg-media {
+    aspect-ratio: 16 / 9;
+}
+
+.bg-card.is-feature .bg-body {
+    padding-top: 0;
+    flex: none;
+    gap: 12px;
+}
+
+.bg-card.is-feature h2 {
+    font-size: clamp(26px, 3vw, 38px);
+    line-height: 1.2;
+}
+
+.bg-card.is-feature .bg-sum {
+    font-size: 17px;
+    -webkit-line-clamp: 5;
+}
+
+.bg-empty {
+    padding: 60px 0;
+    color: var(--bg-mute);
+    font-size: 17px;
+}
+
+.bg-pager {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    margin-top: 52px;
+}
+
+.bg-pager a {
+    min-width: 40px;
+    padding: 9px 14px;
+    border: 1px solid var(--bg-line);
+    color: var(--bg-ink);
+    text-align: center;
+    text-decoration: none;
+    transition: background .2s, color .2s, border-color .2s;
+}
+
+.bg-pager a:hover {
+    border-color: var(--bg-orange);
+    color: var(--bg-orange-d);
+}
+
+.bg-pager a.is-current {
+    background: var(--bg-ink);
+    border-color: var(--bg-ink);
+    color: #fff;
+}
+
+/* ---------- bài chi tiết ---------- */
+.bg-preview {
+    padding: 12px 20px;
+    background: #fff3e8;
+    border-bottom: 2px solid var(--bg-orange);
+    color: var(--bg-ink);
+    text-align: center;
+    font-size: 14px;
+}
+
+.bg-preview a {
+    margin-left: 10px;
+    color: var(--bg-orange-d);
+    font-weight: 600;
+}
+
+.bg-article-wrap {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 20px 24px;
+    color: var(--bg-ink);
+}
+
+.bg-crumb {
+    margin-bottom: 28px;
+    font-size: 14px;
+    color: var(--bg-mute);
+}
+
+.bg-crumb a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.bg-crumb a:hover {
+    color: var(--bg-orange-d);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.bg-article-head h1 {
+    margin: 0 0 14px;
+    font: 700 clamp(30px, 4.6vw, 50px)/1.15 Georgia, "Times New Roman", serif;
+    letter-spacing: -.01em;
+}
+
+.bg-article-head .bg-lead {
+    margin: 16px 0 0;
+    padding-left: 16px;
+    border-left: 4px solid var(--bg-orange);
+    font: italic 20px/1.6 Georgia, serif;
+    color: #4b4137;
+}
+
+.bg-cover {
+    margin: 32px -60px 36px;
+}
+
+.bg-cover img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 520px;
+    object-fit: cover;
+}
+
+.bg-article {
+    font: 18px/1.85 Georgia, "Times New Roman", serif;
+    color: #2b241d;
+}
+
+.bg-article p {
+    margin: 0 0 1.3em;
+}
+
+.bg-article h2 {
+    margin: 2em 0 .6em;
+    padding-left: 14px;
+    border-left: 5px solid var(--bg-orange);
+    font: 700 28px/1.3 Georgia, serif;
+}
+
+.bg-article h3 {
+    margin: 1.6em 0 .5em;
+    font: 700 22px/1.35 Georgia, serif;
+}
+
+.bg-article ul {
+    margin: 0 0 1.3em;
+    padding-left: 1.3em;
+}
+
+.bg-article li {
+    margin-bottom: .4em;
+}
+
+.bg-article li::marker {
+    color: var(--bg-orange);
+}
+
+.bg-article blockquote {
+    margin: 1.6em 0;
+    padding: 4px 0 4px 22px;
+    border-left: 4px solid var(--bg-ink);
+    font-style: italic;
+    font-size: 20px;
+    color: #4b4137;
+}
+
+.bg-article a {
+    color: var(--bg-orange-d);
+    text-underline-offset: 3px;
+}
+
+.bg-article figure {
+    margin: 1.8em -60px;
+}
+
+.bg-article figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.bg-article figcaption {
+    margin: 8px 60px 0;
+    font: 14px/1.5 system-ui, sans-serif;
+    color: var(--bg-mute);
+}
+
+.bg-others {
+    max-width: 1180px;
+    margin: 40px auto 0;
+    padding: 40px 20px 72px;
+    border-top: 3px solid var(--bg-ink);
+    color: var(--bg-ink);
+}
+
+.bg-others h2 {
+    margin: 0 0 24px;
+    font: 700 28px Georgia, serif;
+}
+
+.bg-others-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+}
+
+.bg-other {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    color: inherit;
+    text-decoration: none;
+}
+
+.bg-other-img {
+    display: block;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background: #efe5d6;
+}
+
+.bg-other-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.bg-other-title {
+    font: 700 19px/1.35 Georgia, serif;
+}
+
+.bg-other:hover .bg-other-title {
+    color: var(--bg-orange-d);
+}
+
+.bg-wrap a:focus-visible,
+.bg-article-wrap a:focus-visible,
+.bg-others a:focus-visible {
+    outline: 2px solid var(--bg-orange);
+    outline-offset: 3px;
+}
+
+@media (max-width: 960px) {
+
+    .bg-grid,
+    .bg-others-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .bg-card.is-feature {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    .bg-cover,
+    .bg-article figure {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .bg-article figcaption {
+        margin-left: 0;
+        margin-right: 0;
+    }
+}
+
+@media (max-width: 600px) {
+
+    .bg-grid,
+    .bg-others-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .bg-article {
+        font-size: 17px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .bg-media img,
+    .bg-media::after,
+    .bg-card h2 a,
+    .bg-pager a {
+        transition: none;
+    }
+}
