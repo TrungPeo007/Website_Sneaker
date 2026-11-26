@@ -1,0 +1,707 @@
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap');
+
+/* ===== Admin · Bài viết — ngôn ngữ "hộp giày": mũi giày, đường may chỉ, nhãn treo ===== */
+:root {
+    --ink: #1f140c;
+    --box: #ff5a1f;
+    --box-d: #e04a10;
+    --kraft: #ecd9bd;
+    --kraft-d: #b88a58;
+    --paper: #fbf6ee;
+    --line: #dccbb0;
+    --muted: #85735f;
+    --ok: #177a43;
+    --ok-bg: #dff3e6;
+    --err: #c0392b;
+    --err-bg: #fbe9e6;
+    --toe: 20px 4px 20px 4px;       /* góc mũi giày */
+    --toe-s: 14px 4px 14px 4px;
+    --pop: 3px 3px 0 var(--ink);    /* bóng cứng kiểu tem dán */
+    --display: 'Bricolage Grotesque', system-ui, sans-serif;
+}
+
+/* ---------- Tiêu đề trang ---------- */
+.top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 26px;
+    padding-bottom: 18px;
+    border-bottom: 2px dashed var(--kraft-d);   /* đường may chỉ */
+}
+
+.page-title {
+    margin: 0;
+    font-family: var(--display);
+    font-size: 38px;
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -1px;
+    color: var(--ink);
+}
+
+.page-sub {
+    margin: 8px 0 0;
+    font-size: 14px;
+    color: var(--muted);
+}
+
+/* ---------- Nút chính: tem dán ---------- */
+.btn-add,
+.bl-btn {
+    display: inline-block;
+    padding: 11px 22px;
+    border: 2px solid var(--ink);
+    border-radius: var(--toe-s);
+    background: var(--box);
+    color: #fff;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 800;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    box-shadow: var(--pop);
+    transition: transform .12s, box-shadow .12s, background .12s;
+}
+
+.btn-add:hover,
+.bl-btn:hover {
+    transform: translate(1px, 1px);
+    box-shadow: 2px 2px 0 var(--ink);
+    background: var(--box-d);
+}
+
+.btn-add:active,
+.bl-btn:active {
+    transform: translate(3px, 3px);
+    box-shadow: 0 0 0 var(--ink);
+}
+
+/* nút phụ (Tìm, Quay lại...) */
+.bl-search .bl-btn,
+.bl-btn:not(.bl-btn-primary) {
+    background: #fff;
+    color: var(--ink);
+}
+
+.bl-search .bl-btn:hover,
+.bl-btn:not(.bl-btn-primary):hover {
+    background: var(--kraft);
+}
+
+.bl-btn-primary {
+    background: var(--box);
+    color: #fff;
+}
+
+.bl-block {
+    display: block;
+    width: 100%;
+    margin-top: 12px;
+    box-sizing: border-box;
+}
+
+.btn-add:focus-visible,
+.bl-btn:focus-visible,
+.btn-edit:focus-visible,
+.btn-del:focus-visible,
+.bl-toolbar button:focus-visible {
+    outline: 3px solid var(--box);
+    outline-offset: 3px;
+}
+
+/* ---------- Thông báo: như mảnh vé ---------- */
+.alert {
+    margin: 0 0 20px;
+    padding: 13px 18px;
+    border: 2px dashed;
+    border-radius: 4px 14px 4px 14px;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.alert.ok {
+    background: var(--ok-bg);
+    border-color: var(--ok);
+    color: var(--ok);
+}
+
+.alert.err {
+    background: var(--err-bg);
+    border-color: var(--err);
+    color: var(--err);
+}
+
+/* ---------- Tìm kiếm ---------- */
+.bl-search {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    margin: 0 0 14px;
+}
+
+.bl-search input[type=search] {
+    flex: 1;
+    min-width: 220px;
+    max-width: 440px;
+    padding: 11px 14px;
+    border: 2px solid var(--line);
+    border-radius: 4px;
+    background: #fff;
+    color: var(--ink);
+    font: inherit;
+    font-size: 14px;
+    transition: border-color .15s, box-shadow .15s;
+}
+
+.bl-search input:focus {
+    outline: none;
+    border-color: var(--ink);
+    box-shadow: var(--pop);
+}
+
+.bl-link {
+    color: var(--box-d);
+    font-size: 14px;
+    font-weight: 700;
+    text-underline-offset: 4px;
+}
+
+/* ---------- Bảng: mỗi bài là một "hộp" riêng ---------- */
+.card {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+}
+
+.card .table-wrap {
+    overflow-x: auto;
+}
+
+.card table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+}
+
+.card thead th {
+    padding: 4px 18px;
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 700;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.card tbody td {
+    padding: 16px 18px;
+    border-top: 2px solid var(--line);
+    border-bottom: 2px solid var(--line);
+    background: #fff;
+    color: var(--ink);
+    font-size: 14px;
+    vertical-align: middle;
+}
+
+/* vạch bên trái cho biết trạng thái: cam = đã đăng, kraft = nháp */
+.card tbody td:first-child {
+    border-left: 8px solid var(--kraft-d);
+    border-radius: 14px 0 0 4px;
+}
+
+.card tbody td:last-child {
+    border-right: 2px solid var(--line);
+    border-radius: 0 4px 14px 0;
+}
+
+.card tbody tr:has(.status.on) td:first-child {
+    border-left-color: var(--box);
+}
+
+.card tbody tr:hover td {
+    border-color: var(--ink);
+    background: var(--paper);
+}
+
+.bl-thumb {
+    width: 96px;
+    height: 60px;
+    display: grid;
+    place-items: center;
+    border-radius: 3px 14px 3px 14px;
+    background: var(--kraft);
+    color: var(--muted);
+    font-size: 12px;
+    text-align: center;
+    overflow: hidden;
+}
+
+.bl-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.bl-title {
+    max-width: 340px;
+    font-family: var(--display);
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--ink);
+}
+
+.bl-slug {
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 12px;
+    font-family: ui-monospace, Consolas, monospace;
+}
+
+/* ---------- Trạng thái: nhãn giá treo ---------- */
+.status {
+    position: relative;
+    display: inline-block;
+    padding: 6px 14px 6px 24px;
+    background: var(--kraft);
+    color: #6b4c27;
+    font-size: 12px;
+    font-weight: 800;
+    white-space: nowrap;
+    clip-path: polygon(12px 0, 100% 0, 100% 100%, 12px 100%, 0 50%);   /* đầu vát của nhãn */
+}
+
+.status::before {
+    content: "";
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    width: 6px;
+    height: 6px;
+    margin-top: -3px;
+    border-radius: 50%;
+    background: #fff;       /* lỗ xỏ dây */
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .25);
+}
+
+.status.on {
+    background: var(--ok);
+    color: #fff;
+}
+
+/* ---------- Nút thao tác: phẳng, gọn ---------- */
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+
+.actions form {
+    display: inline;
+    margin: 0;
+}
+
+.btn-edit,
+.btn-del,
+.actions .bl-toggle {
+    display: inline-block;
+    padding: 6px 12px;
+    border: 2px solid var(--ink);
+    border-radius: 3px;
+    background: transparent;
+    color: var(--ink);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.2;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background .12s, color .12s, transform .12s;
+}
+
+.btn-edit:hover,
+.actions .bl-toggle:hover {
+    background: var(--ink);
+    color: #fff;
+}
+
+.btn-del {
+    border-color: var(--err);
+    color: var(--err);
+}
+
+.btn-del:hover {
+    background: var(--err);
+    color: #fff;
+}
+
+.btn-edit:active,
+.btn-del:active,
+.actions .bl-toggle:active {
+    transform: translateY(1px);
+}
+
+.empty {
+    padding: 44px 20px;
+    border: 2px dashed var(--kraft-d);
+    border-radius: var(--toe);
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.note {
+    position: relative;
+    margin: 22px 0 0;
+    padding: 16px 20px;
+    border-radius: var(--toe-s);
+    background: var(--kraft);
+    color: #4a3520;
+    font-size: 13.5px;
+    line-height: 1.7;
+}
+
+.note::after {                      /* đường may chỉ bên trong */
+    content: "";
+    position: absolute;
+    inset: 5px;
+    border: 1.5px dashed var(--kraft-d);
+    border-radius: 10px 2px 10px 2px;
+    pointer-events: none;
+}
+
+/* ---------- Form thêm / sửa ---------- */
+.bl-form {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 330px;
+    gap: 30px;
+    align-items: start;
+}
+
+.bl-col-main,
+.bl-col-side {
+    min-width: 0;
+}
+
+.bl-field {
+    display: block;
+    margin-bottom: 20px;
+}
+
+.bl-field>span {
+    display: block;
+    margin-bottom: 7px;
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--ink);
+}
+
+.bl-field>span em {
+    float: right;
+    font-style: normal;
+    font-weight: 400;
+    color: var(--muted);
+}
+
+.bl-field input[type=text],
+.bl-field textarea,
+.bl-panel input[type=text] {
+    width: 100%;
+    padding: 11px 14px;
+    border: 2px solid var(--line);
+    border-radius: 4px;
+    background: #fff;
+    color: var(--ink);
+    font: inherit;
+    font-size: 15px;
+    box-sizing: border-box;
+    transition: border-color .15s, box-shadow .15s;
+}
+
+.bl-field input:focus,
+.bl-field textarea:focus,
+.bl-panel input[type=text]:focus {
+    outline: none;
+    border-color: var(--ink);
+    box-shadow: var(--pop);
+}
+
+.bl-field textarea {
+    resize: vertical;
+    line-height: 1.6;
+}
+
+#fContent {
+    min-height: 380px;
+    border-radius: 0 0 4px 4px;
+    font-family: ui-monospace, Consolas, monospace;
+    font-size: 14px;
+}
+
+.bl-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    border: 2px solid var(--line);
+    border-bottom: 0;
+    border-radius: 4px 4px 0 0;
+    background: var(--kraft);
+    overflow: hidden;
+}
+
+.bl-toolbar button {
+    padding: 9px 14px;
+    border: 0;
+    border-right: 2px solid var(--line);
+    background: transparent;
+    color: var(--ink);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: background .12s, color .12s;
+}
+
+.bl-toolbar button:hover {
+    background: var(--ink);
+    color: #fff;
+}
+
+.bl-hint {
+    margin: 8px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.bl-hint code {
+    padding: 2px 6px;
+    border-radius: 3px;
+    background: var(--kraft);
+    color: #6b4c27;
+    font-size: 12px;
+}
+
+.bl-panel {
+    position: relative;
+    margin-bottom: 22px;
+    padding: 22px;
+    background: #fff;
+    border: 2px solid var(--ink);
+    border-radius: var(--toe);
+}
+
+.bl-panel::after {                  /* đường may chỉ viền trong */
+    content: "";
+    position: absolute;
+    inset: 6px;
+    border: 1.5px dashed var(--kraft-d);
+    border-radius: 14px 2px 14px 2px;
+    pointer-events: none;
+}
+
+.bl-panel h2 {
+    margin: 0 0 14px;
+    font-family: var(--display);
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--ink);
+}
+
+.bl-check {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.bl-check input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--box);
+}
+
+.bl-thumbbox {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 16 / 10;
+    margin-bottom: 12px;
+    border-radius: 3px 16px 3px 16px;
+    background: var(--kraft);
+    color: var(--muted);
+    font-size: 13px;
+    overflow: hidden;
+}
+
+.bl-thumbbox img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.bl-thumbbox [hidden] {
+    display: none;
+}
+
+@media (max-width: 1100px) {
+    .bl-form {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        transition: none !important;
+    }
+}
+/* ===== Khung xem trước bài viết ===== */
+.pv {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background: rgba(31, 20, 12, .62);
+}
+
+.pv[hidden] {
+    display: none;
+}
+
+.pv-box {
+    display: flex;
+    flex-direction: column;
+    width: min(980px, 100%);
+    height: min(88vh, 900px);
+    background: #fff;
+    border: 2px solid var(--ink);
+    border-radius: var(--toe);
+    box-shadow: 6px 6px 0 var(--ink);
+    overflow: hidden;
+    transition: width .2s;
+}
+
+.pv-box[data-size="mobile"] {
+    width: 400px;
+}
+
+.pv-bar {
+    flex: none;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--kraft);
+    border-bottom: 2px dashed var(--kraft-d);
+}
+
+.pv-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+}
+
+.pv-head b {
+    max-width: 340px;
+    font-family: var(--display);
+    font-size: 15px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.pv-tools {
+    display: flex;
+    gap: 8px;
+}
+
+.pv-box[data-size="desktop"] .js-pv-size[data-size="desktop"],
+.pv-box[data-size="mobile"] .js-pv-size[data-size="mobile"] {
+    background: var(--ink);
+    color: #fff;
+}
+
+/* phần nội dung bài: cuộn được bên trong khung */
+.pv-body {
+    flex: 1;
+    min-height: 0;
+    padding: 28px 32px 44px;
+    background: #fff;
+    overflow-y: auto;
+}
+
+.pv-body .alert {
+    margin: 0;
+}
+
+.pv-article {
+    max-width: 680px;
+    margin: 0 auto;
+    color: var(--ink);
+    font-size: 16px;
+    line-height: 1.75;
+}
+
+.pv-meta {
+    margin: 0;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.pv-article h1 {
+    margin: 8px 0 14px;
+    font-family: var(--display);
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -.5px;
+}
+
+.pv-sum {
+    margin: 0 0 22px;
+    color: #5a4a3a;
+    font-size: 17px;
+}
+
+.pv-cover {
+    display: block;
+    width: 100%;
+    max-height: 340px;
+    margin: 0 0 26px;
+    border-radius: 4px 22px 4px 22px;
+    object-fit: cover;
+}
+
+.pv-content img {
+    max-width: 100%;
+    height: auto;
+}
+
+.pv-content h2,
+.pv-content h3 {
+    margin: 1.6em 0 .5em;
+    font-family: var(--display);
+    line-height: 1.3;
+}
+
+.pv-box[data-size="mobile"] .pv-body {
+    padding: 20px 18px 32px;
+}
+
+.pv-box[data-size="mobile"] .pv-article h1 {
+    font-size: 24px;
+}

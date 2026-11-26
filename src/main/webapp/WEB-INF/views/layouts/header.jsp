@@ -16,7 +16,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800&family=Nunito:wght@600;700;800&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="${ctx}/static/assets/css/main.css">
+    <link rel="stylesheet" href="${ctx}/static/assets/css/customer/main.css">
 </head>
 
 <body>
